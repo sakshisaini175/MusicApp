@@ -2,6 +2,17 @@ body {
     font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
+
+    /* Animated gradient background */
+    background: linear-gradient(-45deg, #0f172a, #1e293b, #06b6d4, #ec4899);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .font-sync {
@@ -27,4 +38,84 @@ body {
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(34, 211, 238, 0.6);
+}
+
+/* Category card hover */
+#category-cards div {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+#category-cards div:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(34, 211, 238, 0.4);
+}
+
+/* Buttons pulse + hover */
+button {
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+button:hover {
+    transform: scale(1.05);
+}
+#favorites-btn {
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+/* Song list hover */
+#song-list div {
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+#song-list div:hover {
+    transform: translateX(6px);
+    background: rgba(255,255,255,0.05);
+}
+
+/* Footer glow when playing */
+footer.playing {
+    box-shadow: 0 -4px 20px rgba(34, 211, 238, 0.5);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Smooth scroll */
+#song-list-container {
+    scroll-behavior: smooth;
+}
+
+.play-btn {
+  transition: transform 0.2s ease;
+}
+.play-btn:hover {
+  transform: scale(1.2) rotate(5deg);
+}
+
+/* Now Playing glow */
+#player-title.playing {
+    animation: glow 2s infinite alternate;
+}
+@keyframes glow {
+    from { text-shadow: 0 0 5px #06b6d4; }
+    to { text-shadow: 0 0 15px #ec4899; }
+}
+
+/* Equalizer animation */
+.equalizer {
+    display: flex;
+    gap: 2px;
+}
+.equalizer span {
+    width: 3px;
+    height: 10px;
+    background: cyan;
+    animation: bounce 1s infinite ease-in-out;
+}
+.equalizer span:nth-child(2) { animation-delay: 0.2s; }
+.equalizer span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1.2); }
 }

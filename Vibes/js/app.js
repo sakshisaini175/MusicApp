@@ -259,6 +259,32 @@ function simulateLiveListeners() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const audioElement = document.getElementById('audio-element');
+  const footer = document.querySelector('footer');
+  const equalizer = document.querySelector('.equalizer');
+
+  if (audioElement && equalizer) {
+    // Hide equalizer by default
+    equalizer.style.display = 'none';
+
+    audioElement.addEventListener('play', () => {
+      footer.classList.add('playing');
+      equalizer.style.display = 'flex';
+    });
+
+    audioElement.addEventListener('pause', () => {
+      footer.classList.remove('playing');
+      equalizer.style.display = 'none';
+    });
+
+    audioElement.addEventListener('ended', () => {
+      footer.classList.remove('playing');
+      equalizer.style.display = 'none';
+    });
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
     const songListContainer = document.getElementById('song-list-container');
     const audioElement = document.getElementById('audio-element');
     const prevBtn = document.getElementById('prev-btn');
