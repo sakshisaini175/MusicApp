@@ -26,6 +26,17 @@ const audioAdPool = [
   "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3"
 ];
 
+// --- Display Banner Ad Refresh Logic ---
+const BANNER_REFRESH_INTERVAL = 60000; // Refresh display ads every 60 seconds
+
+function refreshDisplayAds() {
+  const topAd = document.getElementById('ad-banner-top');
+  if (topAd) {
+    console.log('[Monetization] Refreshing display ad banner slot...');
+    // Replace this block with your ad network's script tag or iframe reload function
+  }
+}
+
 const categoryQueries = {
   sad: '("hindi sad" OR "punjabi sad" OR "bollywood sad" OR Arijit) AND mediatype:audio',
   lofi: '("hindi lofi" OR "punjabi lofi" OR "bollywood lofi" OR "desi lofi") AND mediatype:audio',
@@ -363,6 +374,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Hide equalizer by default
   if (equalizer) equalizer.style.display = 'none';
 
+  // Start display ad refresh interval
+  setInterval(refreshDisplayAds, BANNER_REFRESH_INTERVAL);
+  
   // Scroll listener for infinite load
   const handleScroll = () => {
     if (!songListContainer) return;
