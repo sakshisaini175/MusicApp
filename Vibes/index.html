@@ -23,6 +23,10 @@
     }
   });
 </script>
+<!-- Vercel Web Analytics Initialization Queue -->
+<script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
 <!-- Vercel Web Analytics Tag -->
 <script defer src="/_vercel/insights/script.js"></script>
 <body class="bg-slate-900 text-white h-screen flex flex-col overflow-hidden">
@@ -61,29 +65,39 @@
 
 <!-- Fixed Player Footer -->
 <footer class="fixed bottom-0 left-0 right-0 bg-slate-800/95 backdrop-blur border-t border-slate-700 p-3 md:p-4 shadow-lg z-50">
-  <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-    <div>
-      <h3 id="player-title" class="font-bold text-sm md:text-base text-cyan-400">No song playing</h3>
-      <p id="player-artist" class="text-xs text-slate-400">---</p>
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+    
+    <!-- Left: Track Details -->
+    <div class="flex items-center justify-between w-full md:w-1/3 min-w-0">
+      <div class="truncate">
+        <h3 id="player-title" class="font-bold text-xs md:text-sm text-cyan-400 truncate">No song playing</h3>
+        <p id="player-artist" class="text-[11px] md:text-xs text-slate-400 truncate">---</p>
+      </div>
+      <div class="equalizer ml-2 shrink-0 md:hidden" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2 justify-center md:justify-start">
-      <div class="flex items-center gap-2">
-        <button id="prev-btn" class="control-btn bg-slate-700 px-2 py-1 rounded hover:bg-slate-600" title="Previous">⏮</button>
-
+    <!-- Center/Right: Controls & Full-Width Audio Player -->
+    <div class="flex items-center gap-3 w-full md:w-2/3 justify-between md:justify-end">
+      <!-- Media Buttons -->
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button id="prev-btn" class="control-btn bg-slate-700 px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-600 active:scale-95" title="Previous">⏮</button>
+        
         <!-- Shuffle -->
-        <button id="shuffle-btn" class="control-btn bg-slate-700 px-2 py-1 rounded hover:bg-slate-600" title="Shuffle">🔀</button>
-
+        <button id="shuffle-btn" class="control-btn bg-slate-700 px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-600 active:scale-95" title="Shuffle">🔀</button>
+        
         <!-- Repeat -->
-        <button id="repeat-btn" class="control-btn bg-slate-700 px-2 py-1 rounded hover:bg-slate-600" title="Repeat">🔁</button>
-
-        <button id="next-btn" class="control-btn bg-slate-700 px-2 py-1 rounded hover:bg-slate-600" title="Next">⏭</button>
+        <button id="repeat-btn" class="control-btn bg-slate-700 px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-600 active:scale-95" title="Repeat">🔁</button>
+ 
+        <!-- Play/Pause --> 
+        <button id="next-btn" class="control-btn bg-slate-700 px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-600 active:scale-95" title="Next">⏭</button>
       </div>
 
-      <audio id="audio-element" controls class="w-56 md:w-96 rounded-lg h-10 mx-2"></audio>
+      <audio id="audio-element" controls class="mobile-audio-player h-10 rounded-lg"></audio>
 
       <!-- Equalizer Animation -->
-      <div class="equalizer ml-2" aria-hidden="true">
+      <div class="equalizer ml-2 shrink-0 hidden md:flex" aria-hidden="true">
         <span></span><span></span><span></span>
       </div>
     </div>

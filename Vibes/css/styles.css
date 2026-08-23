@@ -80,9 +80,27 @@ footer.playing {
     transition: box-shadow 0.3s ease;
 }
 
-/* Smooth scroll */
+/* Dynamic Audio Player Sizing */
+.mobile-audio-player {
+    width: 100%;
+    min-width: 160px;
+    max-width: 480px; /* Expands nicely on laptops while staying compact on mobile */
+}
+
+@media (min-width: 768px) {
+    .mobile-audio-player {
+        width: 380px; /* Fixed proportional width for desktop/laptop displays */
+    }
+}
+
+/* Scroll area clearance */
 #song-list-container {
-    scroll-behavior: smooth;
+    padding-bottom: 8rem !important;
+}
+
+/* iPhone safe area support */
+footer {
+    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
 }
 
 .play-btn {
