@@ -80,27 +80,32 @@ footer.playing {
     transition: box-shadow 0.3s ease;
 }
 
-/* Dynamic Audio Player Sizing */
+/* Audio Player Sizing Across Viewports */
 .mobile-audio-player {
     width: 100%;
-    min-width: 160px;
-    max-width: 480px; /* Expands nicely on laptops while staying compact on mobile */
+    max-width: 200px; /* Constrain on smaller screens so buttons don't clip */
+}
+
+@media (min-width: 400px) {
+    .mobile-audio-player {
+        max-width: 240px;
+    }
 }
 
 @media (min-width: 768px) {
     .mobile-audio-player {
-        width: 380px; /* Fixed proportional width for desktop/laptop displays */
+        max-width: 380px; /* Expands nicely on laptops & tablets */
     }
 }
 
-/* Scroll area clearance */
+/* Scroll area clearance so last songs aren't hidden behind footer */
 #song-list-container {
-    padding-bottom: 8rem !important;
+    padding-bottom: 8.5rem !important;
 }
 
-/* iPhone safe area support */
-footer {
-    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+/* iPhone Safe Area / Floating Safari Bar Fix */
+.footer-ios-fix {
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)) !important;
 }
 
 .play-btn {
