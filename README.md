@@ -91,5 +91,5 @@ Feel free to use, modify, and share.
 
 👉 This version now includes your screenshot under a **Screenshots section** so visitors immediately see how the app looks.  
 
-<img width="1912" height="1046" alt="image" src="https://github.com/user-attachments/assets/bdf6ca46-1ed4-4fe8-a958-09a98baecedf" />
+<img width="1912" height="1046" alt="image" src="https://github.com/sakshisaini175/MusicApp/blob/main/Vibes/image.png" />
 
