@@ -37,20 +37,30 @@
   </div>
 
 <!-- Fixed Player Footer -->
-<footer class="fixed bottom-0 left-0 right-0 bg-slate-800/95 backdrop-blur border-t border-slate-700 p-4 shadow-lg z-50">
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 max-w-7xl mx-auto">
+<footer class="fixed bottom-0 left-0 right-0 bg-slate-800/95 backdrop-blur border-t border-slate-700 p-3 md:p-4 shadow-lg z-50">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
     <div>
       <h3 id="player-title" class="font-bold text-sm md:text-base text-cyan-400">No song playing</h3>
       <p id="player-artist" class="text-xs text-slate-400">---</p>
     </div>
 
-    <div class="flex items-center gap-3">
-      <button id="prev-btn" class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600">⏮</button>
-      <audio id="audio-element" controls class="w-64 md:w-96 rounded-lg h-10"></audio>
-      <button id="next-btn" class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600">⏭</button>
+    <div class="flex flex-wrap items-center gap-2 justify-center md:justify-start">
+      <div class="flex items-center gap-2">
+        <button id="prev-btn" class="control-btn bg-slate-700 px-2 py-1 rounded hover:bg-slate-600" title="Previous">⏮</button>
+
+        <!-- Shuffle -->
+        <button id="shuffle-btn" class="control-btn bg-slate-700 px-2 py-1 rounded hover:bg-slate-600" title="Shuffle">🔀</button>
+
+        <!-- Repeat -->
+        <button id="repeat-btn" class="control-btn bg-slate-700 px-2 py-1 rounded hover:bg-slate-600" title="Repeat">🔁</button>
+
+        <button id="next-btn" class="control-btn bg-slate-700 px-2 py-1 rounded hover:bg-slate-600" title="Next">⏭</button>
+      </div>
+
+      <audio id="audio-element" controls class="w-56 md:w-96 rounded-lg h-10 mx-2"></audio>
 
       <!-- Equalizer Animation -->
-      <div class="equalizer ml-2">
+      <div class="equalizer ml-2" aria-hidden="true">
         <span></span><span></span><span></span>
       </div>
     </div>
