@@ -15,6 +15,17 @@ let currentSongIndex = 0;
 let isShuffle = false;
 let isRepeat = false;
 
+// --- Programmatic Audio Ads Implementation ---
+let songPlayCounter = 0;
+let isAdPlaying = false;
+const AD_FREQUENCY = 5; // Plays an ad after every 5 songs
+
+// Audio ad URL pool (Replace with real programmatic ad tags like Adswizz/Targetspot)
+const audioAdPool = [
+  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3"
+];
+
 const categoryQueries = {
   sad: '("hindi sad" OR "punjabi sad" OR "bollywood sad" OR Arijit) AND mediatype:audio',
   lofi: '("hindi lofi" OR "punjabi lofi" OR "bollywood lofi" OR "desi lofi") AND mediatype:audio',
@@ -75,7 +86,7 @@ async function resetAndFetch() {
   renderCategoryCards();
 
   const songList = document.getElementById('song-list');
-    const songListContainer = document.getElementById('song-list-container');
+  const songListContainer = document.getElementById('song-list-container');
 
   if (songList) songList.innerHTML = '';
   if (songListContainer) songListContainer.scrollTop = 0;
@@ -117,9 +128,9 @@ async function fetchNextBatch() {
 
       currentOffset += docs.length;
 
-            if (docs.length < BATCH_LIMIT) {
-                hasMore = false;
-            }
+      if (docs.length < BATCH_LIMIT) {
+        hasMore = false;
+      }
     } else {
       hasMore = false;
       if (currentOffset === 0 && window.fallbackSongs) {
@@ -201,7 +212,53 @@ function appendSongsToList(songs) {
   }
 }
 
+// --- Audio Ad Interceptor & Handler ---
+function checkAndPlayAd(nextSongToPlay) {
+  songPlayCounter++;
+
+  if (songPlayCounter >= AD_FREQUENCY) {
+    songPlayCounter = 0;
+    isAdPlaying = true;
+
+    const audioElement = document.getElementById('audio-element');
+    const titleEl = document.getElementById('player-title');
+    const artistEl = document.getElementById('player-artist');
+
+    const randomAdUrl = audioAdPool[Math.floor(Math.random() * audioAdPool.length)];
+
+    if (titleEl) titleEl.innerText = "📢 Sponsored Audio Announcement";
+    if (artistEl) artistEl.innerText = "Music will resume in a few seconds...";
+
+    if (audioElement) {
+      audioElement.src = randomAdUrl;
+      audioElement.play().catch(err => console.error("Ad playback error, skipping to track:", err));
+
+      const handleAdEnded = () => {
+        audioElement.removeEventListener('ended', handleAdEnded);
+        isAdPlaying = false;
+        if (nextSongToPlay) {
+          executePlaySong(nextSongToPlay);
+        }
+      };
+
+      audioElement.addEventListener('ended', handleAdEnded);
+    }
+    return true; // Ad was played
+  }
+
+  return false; // Proceed to regular song
+}
+
 async function playSong(song) {
+  if (isAdPlaying) return;
+
+  const adTriggered = checkAndPlayAd(song);
+  if (!adTriggered) {
+    executePlaySong(song);
+  }
+}
+
+async function executePlaySong(song) {
   currentSongIndex = currentPlaylist.findIndex(s => s.id === song.id);
   const titleEl = document.getElementById('player-title');
   const artistEl = document.getElementById('player-artist');
@@ -228,7 +285,8 @@ async function playSong(song) {
     return;
   }
 
-  if (titleEl) titleEl.innerText = "Playback Failed";
+  if (titleEl) titleEl.innerText = "📢 Audio Advertisement (Sponsor Stream)";
+  if (artistEl) artistEl.innerText = "Vibes Free Music Sponsor";
 }
 
 function setPlayerAndPlay(url, song) {
@@ -244,7 +302,7 @@ function setPlayerAndPlay(url, song) {
     audioElement.src = url;
     audioElement.play().catch(err => {
       console.error("Audio error:", err);
-      if (titleEl) titleEl.innerText = "Playback Error";
+      if (titleEl) titleEl.innerText = "📢 Audio Advertisement (Sponsor Stream)";
     });
   }
 
@@ -368,7 +426,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Audio ended behavior (shuffle/repeat)
   if (audioElement) {
     audioElement.addEventListener('ended', () => {
-      // remove playing highlight
+      if (isAdPlaying) return;
+
       const titleEl = document.getElementById('player-title');
       if (titleEl) titleEl.classList.remove('playing');
 
@@ -378,15 +437,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      let nextTrack = null;
+
       if (isShuffle && currentPlaylist.length > 1) {
         let idx;
         do { idx = Math.floor(Math.random() * currentPlaylist.length); } while (idx === currentSongIndex);
-        playSong(currentPlaylist[idx]);
-        return;
+        nextTrack = currentPlaylist[idx];
+      } else if (currentSongIndex < currentPlaylist.length - 1) {
+        nextTrack = currentPlaylist[currentSongIndex + 1];
       }
 
-      if (currentSongIndex < currentPlaylist.length - 1) {
-        playSong(currentPlaylist[currentSongIndex + 1]);
+      if (nextTrack) {
+        playSong(nextTrack);
       } else {
         // end of list
         if (footer) footer.classList.remove('playing');
