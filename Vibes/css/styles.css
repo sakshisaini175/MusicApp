@@ -42,6 +42,13 @@ button { transition: all 0.2s ease; }
   bottom: calc(2.25rem + env(safe-area-inset-bottom)) !important;
 }
 
+/* Header Safe Area Inset Fix for iOS */
+.header-ios-fix {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
 /* Equalizer Animation */
 .equalizer span { animation: bounce 1s infinite ease-in-out; }
 .equalizer span:nth-child(2) { animation-delay: 0.2s; }

@@ -36,14 +36,16 @@
   <div class="app-shell flex-1 flex flex-col min-h-screen relative">
 
     <!-- Header Navigation -->
-    <header class="sticky top-0 z-30 app-pad py-2 sm:py-3 flex justify-between items-center gap-2 sm:gap-4 shrink-0 border-b border-white/5 bg-[#0b061d]/85 backdrop-blur-md pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
+<!-- Header Navigation -->
+  <header class="sticky top-0 z-30 header-ios-fix border-b border-white/5 bg-[#0b061d]/90 backdrop-blur-md">
+    <div class="app-shell-inner mx-auto app-pad py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4 min-h-[56px]">
       
       <!-- Brand Logo -->
       <h1 class="font-sync text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent shrink-0">
         Vibes
       </h1>
 
-      <!-- Navigation Links (Visible on Tablet & Landscape Desktop) -->
+      <!-- Navigation Links (Tablet & Desktop Landscape) -->
       <nav class="hidden md:flex items-center gap-4 lg:gap-6 text-xs lg:text-sm font-medium text-slate-300">
         <button id="nav-home" class="nav-link text-white font-semibold border-b-2 border-cyan-400 pb-0.5">Home</button>
         <button id="nav-trending" class="nav-link hover:text-white transition">Trending</button>
@@ -51,19 +53,21 @@
         <button id="nav-playlist" class="nav-link hover:text-white transition">My Playlist</button>
       </nav>
 
-      <!-- Right Action Items (Search + Mobile Favorites) -->
-      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-        <div id="search-container" class="relative flex items-center">
-          <input id="search-input" type="text" placeholder="Search songs..."
-                 class="w-32 sm:w-48 md:w-56 bg-white/10 border border-white/10 pl-7 pr-3 py-1 sm:py-1.5 rounded-full text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 transition">
+      <!-- Search & Mobile Actions -->
+      <div class="flex items-center justify-end gap-2 sm:gap-3 flex-1 sm:flex-initial min-w-0">
+        <div id="search-container" class="relative flex items-center flex-1 sm:flex-initial max-w-[180px] sm:max-w-xs min-w-0">
+          <input id="search-input" type="text" placeholder="Search..."
+                 class="w-full bg-white/10 border border-white/10 pl-7 pr-2.5 py-1 sm:py-1.5 rounded-full text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 transition truncate">
           <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 pointer-events-none"></i>
         </div>
-        <button id="favorites-btn" class="flex md:hidden items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 transition shrink-0">
-          <i data-lucide="heart" class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current"></i>
+        
+        <button id="favorites-btn" class="flex md:hidden items-center justify-center w-8 h-8 rounded-full bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 transition shrink-0">
+          <i data-lucide="heart" class="w-4 h-4 fill-current"></i>
         </button>
       </div>
 
-    </header>
+    </div>
+  </header>
 
     <!-- Content Area -->
     <main class="flex-1 app-pad py-4" id="song-list-container">
