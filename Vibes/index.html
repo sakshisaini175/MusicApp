@@ -86,14 +86,14 @@
       </div>
 
       <!-- Controls + Audio -->
-      <div class="flex items-center gap-2 flex-wrap justify-end shrink-0">
+      <div class="player-controls flex items-center gap-1 flex-nowrap justify-end shrink-0 min-w-0">
         <div class="flex items-center gap-1 shrink-0">
           <button id="prev-btn" class="control-btn bg-slate-700 px-2 py-1 rounded text-xs hover:bg-slate-600 active:scale-95">⏮</button>
           <button id="shuffle-btn" class="control-btn bg-slate-700 px-2 py-1 rounded text-xs hover:bg-slate-600 active:scale-95">🔀</button>
           <button id="repeat-btn" class="control-btn bg-slate-700 px-2 py-1 rounded text-xs hover:bg-slate-600 active:scale-95">🔁</button>
           <button id="next-btn" class="control-btn bg-slate-700 px-2 py-1 rounded text-xs hover:bg-slate-600 active:scale-95">⏭</button>
         </div>
-        <audio id="audio-element" controls class="w-36 sm:w-64 md:w-96 h-8 rounded-lg shrink min-w-0"></audio>
+        <audio id="audio-element" controls class="min-w-0 shrink"></audio>
       </div>
     </div>
   </footer>

@@ -151,15 +151,30 @@ footer.playing { box-shadow: 0 -4px 20px rgba(34, 211, 238, 0.5); transition: bo
 }
 #song-list > * * { min-width: 0; }
 
-/* Footer never grows taller than one row on any device; controls
-   simply shrink instead of stacking. */
-footer .app-shell-inner,
-footer > div {
-  flex-wrap: nowrap;
-}
+/* ---------------------------------------------------------------
+   Footer player controls
+   The native <audio controls> widget has a browser-defined minimum
+   rendering width that CSS width alone doesn't reliably cap (this
+   was the actual bug: a stray Tailwind `flex-wrap` class let this
+   group split onto a second line instead of shrinking). Everything
+   here is forced onto one row, and the audio element is capped with
+   `!important` so no browser's default UA width can force a wrap.
+   ----------------------------------------------------------------*/
+.player-controls { flex-wrap: nowrap !important; }
 
-/* Safety net: on genuinely tiny screens (<360px), allow the footer's
-   two halves to wrap onto two lines rather than clipping. */
-@media (max-width: 359px) {
-  footer .app-shell-inner { flex-wrap: wrap; justify-content: center; }
+#audio-element {
+  height: 2rem;
+  border-radius: 0.5rem;
+  width: clamp(84px, 24vw, 380px) !important;
+  max-width: clamp(84px, 24vw, 380px) !important;
+}
+@media (min-width: 480px)  { #audio-element { width: clamp(160px, 22vw, 380px) !important; max-width: clamp(160px, 22vw, 380px) !important; } }
+@media (min-width: 768px)  { #audio-element { width: 256px !important; max-width: 256px !important; } }
+@media (min-width: 1024px) { #audio-element { width: 384px !important; max-width: 384px !important; } }
+
+/* Give the transport buttons a touch more breathing room to shrink
+   before the row would ever need to wrap. */
+@media (max-width: 420px) {
+  .control-btn { padding: 0.25rem 0.4rem !important; font-size: 0.7rem !important; }
+  .player-controls { gap: 0.35rem !important; }
 }
