@@ -93,45 +93,58 @@
 
   </div>
 
+
   <!-- Bottom Floating Player Bar -->
   <footer class="fixed bottom-9 left-0 right-0 z-40 app-pad footer-ios-fix pointer-events-none">
     <div class="app-shell-inner mx-auto pointer-events-auto">
-      <div class="bg-gradient-to-r from-[#1a0e3b]/95 via-[#23124d]/95 to-[#160b33]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-3 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="bg-gradient-to-r from-[#1a0e3b]/95 via-[#23124d]/95 to-[#160b33]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-2.5 sm:p-3 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3">
 
-        <!-- Track Info -->
-        <div class="flex items-center gap-3 min-w-0 w-full sm:w-1/3">
-          <div class="relative w-11 h-11 rounded-xl overflow-hidden shrink-0 bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center shadow-md">
-            <i data-lucide="music" class="w-6 h-6 text-white"></i>
-            <div class="equalizer absolute inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center gap-0.5" id="player-equalizer" style="display:none;">
-              <span class="w-1 bg-cyan-400 rounded-full"></span>
-              <span class="w-1 bg-cyan-400 rounded-full"></span>
-              <span class="w-1 bg-cyan-400 rounded-full"></span>
+        <!-- Top/Left Track Info & Right Quick Actions in Mobile Row -->
+        <div class="flex items-center justify-between w-full sm:w-1/3 min-w-0">
+          <div class="flex items-center gap-2.5 min-w-0 flex-1">
+            <div class="relative w-9 h-9 sm:w-11 sm:h-11 rounded-xl overflow-hidden shrink-0 bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center shadow-md">
+              <i data-lucide="music" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+              <div class="equalizer absolute inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center gap-0.5" id="player-equalizer" style="display:none;">
+                <span class="w-1 bg-cyan-400 rounded-full"></span>
+                <span class="w-1 bg-cyan-400 rounded-full"></span>
+                <span class="w-1 bg-cyan-400 rounded-full"></span>
+              </div>
+            </div>
+            <div class="truncate">
+              <h3 id="player-title" class="font-bold text-xs sm:text-sm text-white truncate">No song playing</h3>
+              <p id="player-artist" class="text-[10px] sm:text-[11px] text-slate-400 truncate">Select a track to play</p>
             </div>
           </div>
-          <div class="truncate">
-            <h3 id="player-title" class="font-bold text-xs sm:text-sm text-white truncate">No song playing</h3>
-            <p id="player-artist" class="text-[11px] text-slate-400 truncate">Select a track to play</p>
+
+          <!-- Quick Action Buttons for Mobile Portrait -->
+          <div class="flex sm:hidden items-center gap-1 shrink-0 ml-2">
+            <button id="player-fav-btn-mobile" class="text-slate-400 hover:text-pink-500 transition p-1.5" title="Favorite">
+              <i data-lucide="heart" class="w-4 h-4"></i>
+            </button>
+            <button id="player-menu-btn-mobile" class="text-slate-400 hover:text-white transition p-1.5" aria-label="More options">
+              <i data-lucide="more-vertical" class="w-4 h-4"></i>
+            </button>
           </div>
         </div>
 
         <!-- Center Controls + Progress Bar -->
-        <div class="flex flex-col items-center gap-1.5 w-full sm:w-1/2 min-w-0">
+        <div class="flex flex-col items-center gap-1 w-full sm:w-1/2 min-w-0">
           
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3 sm:gap-4">
             <button id="repeat-btn" class="text-slate-400 hover:text-white transition text-xs" title="Repeat">
-              <i data-lucide="repeat" class="w-4 h-4"></i>
+              <i data-lucide="repeat" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
             </button>
             <button id="prev-btn" class="text-slate-300 hover:text-white transition active:scale-90" title="Previous">
-              <i data-lucide="skip-back" class="w-5 h-5 fill-current"></i>
+              <i data-lucide="skip-back" class="w-4 h-4 sm:w-5 sm:h-5 fill-current"></i>
             </button>
-            <button id="play-pause-btn" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition">
-              <i data-lucide="play" id="play-pause-icon" class="w-4 h-4 fill-current ml-0.5"></i>
+            <button id="play-pause-btn" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition">
+              <i data-lucide="play" id="play-pause-icon" class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current ml-0.5"></i>
             </button>
             <button id="next-btn" class="text-slate-300 hover:text-white transition active:scale-90" title="Next">
-              <i data-lucide="skip-forward" class="w-5 h-5 fill-current"></i>
+              <i data-lucide="skip-forward" class="w-4 h-4 sm:w-5 sm:h-5 fill-current"></i>
             </button>
             <button id="shuffle-btn" class="text-slate-400 hover:text-white transition text-xs" title="Shuffle">
-              <i data-lucide="shuffle" class="w-4 h-4"></i>
+              <i data-lucide="shuffle" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
             </button>
           </div>
 
@@ -143,7 +156,7 @@
 
         </div>
 
-        <!-- Right Menu Options -->
+        <!-- Right Menu Options (Desktop Landscape) -->
         <div class="hidden sm:flex items-center justify-end gap-2 w-1/6 relative">
           <button id="player-fav-btn" class="text-slate-400 hover:text-pink-500 transition p-1" title="Favorite">
             <i data-lucide="heart" class="w-4 h-4"></i>
@@ -250,6 +263,7 @@
       });
 
       const menuBtn = document.getElementById('player-menu-btn');
+      const menuBtnMobile = document.getElementById('player-menu-btn-mobile');
       const menuPanel = document.getElementById('player-menu-panel');
       const speedButtons = document.querySelectorAll('.speed-btn');
       const downloadBtn = document.getElementById('download-btn');
@@ -263,6 +277,13 @@
           if (!menuPanel.contains(e.target) && e.target !== menuBtn) {
             menuPanel.classList.add('hidden');
           }
+        });
+      }
+     
+      if (menuBtnMobile && menuPanel) {
+        menuBtnMobile.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menuPanel.classList.toggle('hidden');
         });
       }
 
