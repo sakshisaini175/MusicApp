@@ -165,16 +165,17 @@ footer.playing { box-shadow: 0 -4px 20px rgba(34, 211, 238, 0.5); transition: bo
 #audio-element {
   height: 2rem;
   border-radius: 0.5rem;
-  width: clamp(84px, 24vw, 380px) !important;
-  max-width: clamp(84px, 24vw, 380px) !important;
+  width: clamp(150px, 34vw, 380px) !important;
+  max-width: clamp(150px, 34vw, 380px) !important;
 }
-@media (min-width: 480px)  { #audio-element { width: clamp(160px, 22vw, 380px) !important; max-width: clamp(160px, 22vw, 380px) !important; } }
+@media (min-width: 480px)  { #audio-element { width: clamp(180px, 26vw, 380px) !important; max-width: clamp(180px, 26vw, 380px) !important; } }
 @media (min-width: 768px)  { #audio-element { width: 256px !important; max-width: 256px !important; } }
 @media (min-width: 1024px) { #audio-element { width: 384px !important; max-width: 384px !important; } }
 
 /* Give the transport buttons a touch more breathing room to shrink
    before the row would ever need to wrap. */
 @media (max-width: 420px) {
-  .control-btn { padding: 0.25rem 0.4rem !important; font-size: 0.7rem !important; }
-  .player-controls { gap: 0.35rem !important; }
+  .control-btn { padding: 0.2rem 0.3rem !important; font-size: 0.65rem !important; }
+  .player-controls { gap: 0.25rem !important; }
+  #player-title, #player-artist { max-width: 34vw; }
 }
