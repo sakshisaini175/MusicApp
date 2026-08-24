@@ -35,8 +35,7 @@
   <!-- App Shell -->
   <div class="app-shell flex-1 flex flex-col min-h-screen relative">
 
-    <!-- Header Navigation -->
-<!-- Unified Responsive Header Navigation -->
+  <!-- Header Navigation -->
   <header class="sticky top-0 z-30 header-ios-fix border-b border-white/5 bg-[#0b061d]/90 backdrop-blur-md">
     <div class="app-shell-inner mx-auto app-pad py-2 sm:py-3 flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-4">
       
@@ -47,17 +46,13 @@
           Vibes
         </h1>
 
-        <!-- Search & Heart Icon (Mobile Top Right) -->
-        <div class="flex md:hidden items-center gap-2 flex-1 max-w-[200px] justify-end min-w-0">
+        <!-- Search Bar (Mobile Top Right) -->
+        <div class="flex md:hidden items-center flex-1 max-w-[200px] justify-end min-w-0">
           <div class="relative flex items-center w-full">
             <input id="search-input-mobile" type="text" placeholder="Search..."
                    class="w-full bg-white/10 border border-white/10 pl-7 pr-2.5 py-1 rounded-full text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 transition truncate">
             <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 pointer-events-none"></i>
           </div>
-          
-          <button id="favorites-btn-mobile" class="flex items-center justify-center w-7 h-7 rounded-full bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 transition shrink-0" title="Favorites">
-            <i data-lucide="heart" class="w-3.5 h-3.5 fill-current"></i>
-          </button>
         </div>
       </div>
 
