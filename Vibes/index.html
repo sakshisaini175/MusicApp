@@ -86,19 +86,186 @@
       </div>
 
       <!-- Controls + Audio -->
-      <div class="player-controls flex items-center gap-1 flex-nowrap justify-end shrink-0 min-w-0">
+      <div class="player-controls flex items-center gap-1 flex-nowrap justify-end shrink-0 min-w-0 flex-1">
         <div class="flex items-center gap-1 shrink-0">
           <button id="prev-btn" class="control-btn bg-slate-700 px-2 py-1 rounded text-xs hover:bg-slate-600 active:scale-95">⏮</button>
           <button id="shuffle-btn" class="control-btn bg-slate-700 px-2 py-1 rounded text-xs hover:bg-slate-600 active:scale-95">🔀</button>
           <button id="repeat-btn" class="control-btn bg-slate-700 px-2 py-1 rounded text-xs hover:bg-slate-600 active:scale-95">🔁</button>
           <button id="next-btn" class="control-btn bg-slate-700 px-2 py-1 rounded text-xs hover:bg-slate-600 active:scale-95">⏭</button>
         </div>
-        <audio id="audio-element" controls class="min-w-0 shrink"></audio>
+
+        <!-- Custom progress bar: replaces the native <audio controls> UI,
+             which iOS Safari collapses to a bare play button below ~250px
+             with no way to override it via CSS. This renders identically
+             on every browser/device instead. -->
+        <div id="custom-player-bar" class="flex items-center gap-1.5 min-w-0 flex-1 relative">
+          <button id="play-pause-btn" class="control-btn bg-cyan-500 text-black shrink-0 rounded hover:bg-cyan-400 active:scale-95" aria-label="Play or pause">
+            <span id="play-pause-icon">▶</span>
+          </button>
+          <span id="current-time" class="time-label text-[10px] text-slate-400 shrink-0 tabular-nums">0:00</span>
+          <input id="seek-bar" type="range" min="0" max="100" value="0" step="0.1"
+                 class="seek-bar flex-1 min-w-0" aria-label="Seek">
+          <span id="duration-time" class="time-label text-[10px] text-slate-400 shrink-0 tabular-nums">0:00</span>
+
+          <!-- Three-dot menu: download + playback speed -->
+          <div class="relative shrink-0">
+            <button id="player-menu-btn" class="control-btn bg-slate-700 rounded hover:bg-slate-600 active:scale-95" aria-haspopup="true" aria-expanded="false" aria-label="More player options">⋮</button>
+            <div id="player-menu-panel" class="player-menu-panel hidden" role="menu">
+              <button id="download-btn" class="player-menu-item" role="menuitem">⬇ Download track</button>
+              <div class="player-menu-divider"></div>
+              <p class="player-menu-label">Playback speed</p>
+              <div id="speed-options" class="player-menu-speeds">
+                <button class="speed-btn" data-speed="0.5" role="menuitemradio">0.5x</button>
+                <button class="speed-btn" data-speed="0.75" role="menuitemradio">0.75x</button>
+                <button class="speed-btn speed-active" data-speed="1" role="menuitemradio">1x</button>
+                <button class="speed-btn" data-speed="1.25" role="menuitemradio">1.25x</button>
+                <button class="speed-btn" data-speed="1.5" role="menuitemradio">1.5x</button>
+                <button class="speed-btn" data-speed="2" role="menuitemradio">2x</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <audio id="audio-element" class="sr-only"></audio>
       </div>
     </div>
   </footer>
 
   <script src="js/playlist.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    // Custom progress bar for #audio-element. Independent of app.js/playlist.js —
+    // only reads/controls the audio element's standard playback API, so it
+    // works no matter how those files load a track into it.
+    (function () {
+      const audio = document.getElementById('audio-element');
+      const playPauseBtn = document.getElementById('play-pause-btn');
+      const playPauseIcon = document.getElementById('play-pause-icon');
+      const seekBar = document.getElementById('seek-bar');
+      const currentTimeEl = document.getElementById('current-time');
+      const durationEl = document.getElementById('duration-time');
+      if (!audio || !playPauseBtn || !seekBar) return;
+
+      let isScrubbing = false;
+
+      function formatTime(sec) {
+        if (!isFinite(sec) || isNaN(sec) || sec < 0) return '0:00';
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+      }
+
+      function updatePlayIcon() {
+        playPauseIcon.textContent = audio.paused ? '▶' : '⏸';
+        playPauseBtn.setAttribute('aria-label', audio.paused ? 'Play' : 'Pause');
+      }
+
+      playPauseBtn.addEventListener('click', () => {
+        if (!audio.src) return;
+        if (audio.paused) audio.play().catch(() => {});
+        else audio.pause();
+      });
+
+      audio.addEventListener('play', updatePlayIcon);
+      audio.addEventListener('pause', updatePlayIcon);
+      audio.addEventListener('ended', updatePlayIcon);
+
+      audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+        seekBar.max = isFinite(audio.duration) ? audio.duration : 100;
+      });
+
+      audio.addEventListener('timeupdate', () => {
+        if (isScrubbing) return;
+        currentTimeEl.textContent = formatTime(audio.currentTime);
+        if (isFinite(audio.duration) && audio.duration > 0) {
+          seekBar.value = audio.currentTime;
+        }
+      });
+
+      seekBar.addEventListener('input', () => {
+        isScrubbing = true;
+        currentTimeEl.textContent = formatTime(Number(seekBar.value));
+      });
+
+      seekBar.addEventListener('change', () => {
+        audio.currentTime = Number(seekBar.value);
+        isScrubbing = false;
+      });
+
+      // Keep in sync if another script (app.js) starts playback on its own.
+      updatePlayIcon();
+
+      // --- Three-dot menu: playback speed + download -------------------
+      const menuBtn = document.getElementById('player-menu-btn');
+      const menuPanel = document.getElementById('player-menu-panel');
+      const speedButtons = document.querySelectorAll('.speed-btn');
+      const downloadBtn = document.getElementById('download-btn');
+
+      function closeMenu() {
+        menuPanel.classList.add('hidden');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      }
+      function openMenu() {
+        menuPanel.classList.remove('hidden');
+        menuBtn.setAttribute('aria-expanded', 'true');
+      }
+
+      if (menuBtn && menuPanel) {
+        menuBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menuPanel.classList.contains('hidden') ? openMenu() : closeMenu();
+        });
+        document.addEventListener('click', (e) => {
+          if (!menuPanel.classList.contains('hidden') && !menuPanel.contains(e.target) && e.target !== menuBtn) {
+            closeMenu();
+          }
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') closeMenu();
+        });
+      }
+
+      speedButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const rate = parseFloat(btn.dataset.speed);
+          audio.playbackRate = rate;
+          speedButtons.forEach((b) => b.classList.remove('speed-active'));
+          btn.classList.add('speed-active');
+          closeMenu();
+        });
+      });
+
+      if (downloadBtn) {
+        downloadBtn.addEventListener('click', async () => {
+          if (!audio.src) return;
+          const titleEl = document.getElementById('player-title');
+          const rawName = (titleEl && titleEl.innerText && titleEl.innerText !== 'Loading stream...' ? titleEl.innerText : 'vibes-track').trim();
+          const safeName = rawName.replace(/[\\/:*?"<>|]+/g, '').slice(0, 80) || 'vibes-track';
+
+          try {
+            // Works when the source allows cross-origin fetch; produces a
+            // real local download with the track's title as the filename.
+            const res = await fetch(audio.src);
+            const blob = await res.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = `${safeName}.mp3`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
+          } catch (err) {
+            // Cross-origin sources that block fetch: fall back to opening
+            // the stream directly so the user can save it manually.
+            console.warn('Direct download blocked, opening stream instead:', err);
+            window.open(audio.src, '_blank', 'noopener');
+          }
+          closeMenu();
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
