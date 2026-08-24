@@ -173,12 +173,17 @@ footer.playing { box-shadow: 0 -4px 20px rgba(34, 211, 238, 0.5); transition: bo
   -webkit-appearance: none;
   appearance: none;
   height: 4px;
-  min-width: 32px;
+  width: 64px !important;
+  min-width: 64px !important;
   border-radius: 999px;
   background: rgba(148,163,184,0.35);
   outline: none;
   cursor: pointer;
 }
+@media (min-width: 400px) { .seek-bar { width: 90px !important; min-width: 90px !important; } }
+@media (min-width: 480px) { .seek-bar { width: 130px !important; min-width: 130px !important; } }
+@media (min-width: 768px) { .seek-bar { width: 200px !important; min-width: 200px !important; } }
+@media (min-width: 1024px){ .seek-bar { width: 280px !important; min-width: 280px !important; } }
 .seek-bar::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
