@@ -57,12 +57,12 @@
       </div>
 
       <!-- Horizontal Navigation Links (Same Menu for Mobile & Desktop) -->
-      <nav class="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar text-xs sm:text-sm font-medium text-slate-300 py-0.5 whitespace-nowrap">
-        <button id="nav-home" class="nav-link text-white font-semibold border-b-2 border-cyan-400 pb-0.5 shrink-0">Home</button>
-        <button id="nav-trending" class="nav-link hover:text-white transition shrink-0">Trending</button>
-        <button id="nav-favorites" class="nav-link hover:text-white transition shrink-0">Favorites</button>
-        <button id="nav-playlist" class="nav-link hover:text-white transition shrink-0">My Playlist</button>
-      </nav>
+    <nav class="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar text-xs sm:text-sm font-medium text-slate-300 py-0.5 whitespace-nowrap">
+      <button id="nav-home" data-tab="home" class="nav-link text-white font-semibold border-b-2 border-cyan-400 pb-0.5 shrink-0">Home</button>
+      <!--<button id="nav-trending" data-tab="trending" class="nav-link hover:text-white transition shrink-0">Trending</button>-->
+      <button id="nav-favorites" data-tab="favorites" class="nav-link hover:text-white transition shrink-0">Favorites</button>
+      <!--<button id="nav-playlist" data-tab="playlist" class="nav-link hover:text-white transition shrink-0">My Playlist</button>-->
+    </nav>
 
       <!-- Desktop Search Bar (Visible on Laptops / Tablets) -->
       <div class="hidden md:flex items-center gap-3 shrink-0">
@@ -278,6 +278,36 @@
       seekBar.addEventListener('change', () => {
         audio.currentTime = Number(seekBar.value);
         isScrubbing = false;
+      });
+
+      // Active Tab Highlight Handler
+      const navButtons = document.querySelectorAll('.nav-link, .mobile-nav-item');
+
+      function setActiveTab(selectedTab) {
+        navButtons.forEach(btn => {
+          const tabName = btn.getAttribute('id')?.replace('nav-', '') || btn.getAttribute('data-tab');
+          
+          // Reset to inactive styling
+          btn.classList.remove('text-white', 'font-semibold', 'border-b-2', 'border-cyan-400', 'pb-0.5');
+          btn.classList.add('text-slate-300');
+
+          // Apply active styling if matched
+          if (tabName === selectedTab) {
+            btn.classList.remove('text-slate-300');
+            btn.classList.add('text-white', 'font-semibold', 'border-b-2', 'border-cyan-400', 'pb-0.5');
+          }
+        });
+      }
+
+      // Bind Click Listeners to Navigation Items
+      navButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const targetTab = btn.getAttribute('id')?.replace('nav-', '') || btn.getAttribute('data-tab');
+          if (targetTab) {
+            setActiveTab(targetTab);
+            // Trigger your view switching function here (e.g., renderFavoritesView() / renderHomeView())
+          }
+        });
       });
 
       const menuBtn = document.getElementById('player-menu-btn');
