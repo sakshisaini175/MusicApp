@@ -38,7 +38,9 @@ body {
 /* Buttons & Interactive States */
 button { transition: all 0.2s ease; }
 
-.footer-ios-fix { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)) !important; }
+.footer-ios-fix {
+  bottom: calc(2rem + env(safe-area-inset-bottom)) !important;
+}
 
 /* Equalizer Animation */
 .equalizer span { animation: bounce 1s infinite ease-in-out; }

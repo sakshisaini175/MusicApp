@@ -30,7 +30,7 @@
 </script>
 <!-- Vercel Web Analytics Tag -->
 <script defer src="/_vercel/insights/script.js"></script>
-<body class="bg-gradient-to-b from-[#0b061d] via-[#150b36] to-[#080214] text-white h-screen flex flex-col overflow-hidden font-sans">
+<body class="bg-gradient-to-b from-[#0b061d] via-[#150b36] to-[#080214] text-white h-dvh flex flex-col overflow-hidden font-sans">
 
   <!-- App Shell -->
   <div class="app-shell flex-1 flex flex-col min-h-0 relative">
@@ -58,15 +58,15 @@
       </div>
     </header>
 
-    <!-- Content Area -->
-    <main class="flex-1 overflow-y-auto custom-scrollbar app-pad py-4 pb-44 sm:pb-36" id="song-list-container">
+    <!-- Content Area (Increased bottom padding to avoid overlapping the player) -->
+    <main class="flex-1 overflow-y-auto custom-scrollbar app-pad py-4 pb-52 sm:pb-44" id="song-list-container">
       
       <!-- Category Icon Cards -->
       <section class="mb-6">
         <div id="category-cards" class="grid grid-cols-5 gap-2 sm:gap-4"></div>
       </section>
 
-<!-- Section Title & Status (Live Listeners Added Here) -->
+      <!-- Section Title & Status (Live Listeners Added Here) -->
       <div class="flex justify-between items-center mb-3">
         <h2 id="section-title" class="text-base sm:text-lg font-bold text-white tracking-wide">Trending Songs</h2>
         
@@ -90,8 +90,8 @@
 
   </div>
 
-  <!-- Bottom Floating Player Bar -->
-  <footer class="fixed bottom-12 left-0 right-0 z-40 app-pad footer-ios-fix pointer-events-none">
+  <!-- Bottom Floating Player Bar (Adjusted bottom offset to clear ad-banner) -->
+  <footer class="fixed bottom-8 left-0 right-0 z-40 app-pad footer-ios-fix pointer-events-none">
     <div class="app-shell-inner mx-auto pointer-events-auto">
       <div class="bg-gradient-to-r from-[#1a0e3b]/95 via-[#23124d]/95 to-[#160b33]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-3 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
 
