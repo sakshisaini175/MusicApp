@@ -1,8 +1,5 @@
 :root {
-  /* One tuned scale drives spacing everywhere, so the shape of the UI
-     is identical on a phone, a tablet and a 27" monitor -- only the
-     available width changes, never the layout logic. */
-  --shell-max: 900px;
+  --shell-max: 960px;
   --pad: 1rem;
 }
 
@@ -11,30 +8,15 @@
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 body {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(-45deg, #0f172a, #1e293b, #06b6d4, #ec4899);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-/* ---------------------------------------------------------------
-   Layout shell
-   All page content lives inside a centered column capped at
-   --shell-max. Under that width (phones, small tablets) it simply
-   fills the viewport, so mobile isn't a "different app" -- it's the
-   same column, just narrower.
-   ----------------------------------------------------------------*/
 .app-shell {
   width: 100%;
   max-width: var(--shell-max);
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  flex: 1 1 auto;
-  overflow: hidden;
 }
 
 .app-shell-inner {
@@ -47,241 +29,58 @@ body {
 @media (min-width: 640px)  { :root { --pad: 1.25rem; } }
 @media (min-width: 1024px) { :root { --pad: 1.5rem; } }
 
-/* Category cards: same pill-card component everywhere, the grid just
-   gains columns as room appears instead of swapping to a different
-   layout style. */
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.6rem;
-}
-@media (min-width: 480px)  { .category-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 768px)  { .category-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (min-width: 1024px) { .category-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-
-#category-cards > * {
-  padding: 0.85rem 1rem;
-  font-weight: 700;
-  font-size: 0.85rem;
-  line-height: 1.2;
-  white-space: normal;
-}
-
-/* "Favorites" button label collapses to just the heart on the
-   narrowest phones, then reappears once there's room -- so the
-   control never forces the row to wrap or grow full-width. */
-.fav-label { display: none; }
-@media (min-width: 380px) { .fav-label { display: inline; } }
-
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.font-sync { font-family: 'Syncopate', sans-serif; }
-.glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); }
-
 /* Scrollbar */
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 8px; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.3); border-radius: 8px; }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.6); }
+.custom-scrollbar::-webkit-scrollbar { width: 5px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 999px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.4); }
 
-/* Category hover */
-#category-cards div { transition: transform 0.25s ease, box-shadow 0.25s ease; }
-#category-cards div:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 4px 12px rgba(34, 211, 238, 0.4); }
+/* Buttons & Interactive States */
+button { transition: all 0.2s ease; }
 
-/* Buttons */
-button { transition: transform 0.2s ease, background 0.3s ease; }
-button:hover { transform: scale(1.05); }
-#favorites-btn { animation: pulse 2s infinite; }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
-
-/* Song list hover */
-#song-list div { transition: transform 0.2s ease, background 0.2s ease; }
-#song-list div:hover { transform: translateX(6px); background: rgba(255,255,255,0.05); }
-
-/* Footer glow */
-footer.playing { box-shadow: 0 -4px 20px rgba(34, 211, 238, 0.5); transition: box-shadow 0.3s ease; }
-
-/* Safe area fix */
 .footer-ios-fix { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)) !important; }
 
-/* Song list clearance */
-#song-list-container { padding-bottom: 8.5rem !important; }
-
-/* Play button hover */
-.play-btn { transition: transform 0.2s ease; }
-.play-btn:hover { transform: scale(1.2) rotate(5deg); }
-
-/* Now Playing glow */
-#player-title.playing { animation: glow 2s infinite alternate; }
-@keyframes glow { from { text-shadow: 0 0 5px #06b6d4; } to { text-shadow: 0 0 15px #ec4899; } }
-
-/* Equalizer */
-.equalizer { display: flex; gap: 2px; }
-.equalizer span { width: 3px; height: 10px; background: cyan; animation: bounce 1s infinite ease-in-out; }
+/* Equalizer Animation */
+.equalizer span { animation: bounce 1s infinite ease-in-out; }
 .equalizer span:nth-child(2) { animation-delay: 0.2s; }
 .equalizer span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes bounce { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1.2); } }
+@keyframes bounce { 0%, 100% { height: 4px; } 50% { height: 16px; } }
 
-/* ---------------------------------------------------------------
-   Song rows
-   The rows themselves are built by app.js/playlist.js, which weren't
-   part of this upload -- these rules constrain whatever markup lands
-   inside #song-list so a row can never overflow or force the page
-   wider than the shell on a small screen. Share app.js/playlist.js
-   if you want the row's internal spacing (title/artist/Play/heart)
-   tuned to match this same shell system exactly.
-   ----------------------------------------------------------------*/
-#song-list > * {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  min-width: 0;
-  flex-wrap: nowrap;
-  padding: 0.6rem 0.75rem;
-  border-radius: 0.6rem;
-}
-#song-list > * * { min-width: 0; }
-
-/* ---------------------------------------------------------------
-   Custom progress bar
-   Replaces the native <audio controls> widget (see index.html) so
-   playback UI looks and behaves identically across every browser.
-   ----------------------------------------------------------------*/
-.sr-only {
-  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
-}
-
-.player-controls { flex-wrap: nowrap !important; }
-
-#play-pause-btn {
-  width: 1.75rem;
-  height: 1.75rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  line-height: 1;
-}
-
+/* Custom Seek Bar Slider */
 .seek-bar {
   -webkit-appearance: none;
   appearance: none;
   height: 4px;
-  width: 64px !important;
-  min-width: 64px !important;
   border-radius: 999px;
-  background: rgba(148,163,184,0.35);
+  background: rgba(255, 255, 255, 0.15);
   outline: none;
   cursor: pointer;
 }
-@media (min-width: 400px) { .seek-bar { width: 90px !important; min-width: 90px !important; } }
-@media (min-width: 480px) { .seek-bar { width: 130px !important; min-width: 130px !important; } }
-@media (min-width: 768px) { .seek-bar { width: 200px !important; min-width: 200px !important; } }
-@media (min-width: 1024px){ .seek-bar { width: 280px !important; min-width: 280px !important; } }
+
 .seek-bar::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #22d3ee;
-  box-shadow: 0 0 6px rgba(34,211,238,0.6);
-  margin-top: -4px;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: transform 0.15s ease;
 }
+
+.seek-bar::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
 .seek-bar::-moz-range-thumb {
   width: 12px;
   height: 12px;
   border: none;
   border-radius: 50%;
-  background: #22d3ee;
-  box-shadow: 0 0 6px rgba(34,211,238,0.6);
-}
-.seek-bar::-moz-range-track { height: 4px; border-radius: 999px; background: rgba(148,163,184,0.35); }
-
-/* Three-dot menu (download + playback speed) */
-#player-menu-btn {
-  width: 1.5rem;
-  height: 1.75rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  line-height: 1;
-  letter-spacing: -1px;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
-.player-menu-panel {
-  position: absolute;
-  bottom: calc(100% + 0.5rem);
-  right: 0;
-  min-width: 11rem;
-  background: #0f172a;
-  border: 1px solid rgba(148,163,184,0.2);
-  border-radius: 0.65rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-  padding: 0.4rem;
-  z-index: 60;
-}
-.player-menu-panel.hidden { display: none; }
-
-.player-menu-item {
-  width: 100%;
-  text-align: left;
-  padding: 0.45rem 0.5rem;
-  border-radius: 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #e2e8f0;
-  background: transparent;
-}
-.player-menu-item:hover { background: rgba(148,163,184,0.12); }
-
-.player-menu-divider { height: 1px; background: rgba(148,163,184,0.15); margin: 0.35rem 0; }
-
-.player-menu-label {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #64748b;
-  padding: 0.15rem 0.5rem 0.3rem;
-  margin: 0;
-}
-
-.player-menu-speeds {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.3rem;
-  padding: 0 0.15rem;
-}
-
-.speed-btn {
-  padding: 0.3rem 0;
-  border-radius: 0.4rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #94a3b8;
-  background: rgba(148,163,184,0.08);
-}
-.speed-btn:hover { background: rgba(148,163,184,0.18); }
-.speed-btn.speed-active { background: #22d3ee; color: #0f172a; }
-
-/* Time labels hide on the narrowest phones so the seek bar always has
-   room to be usefully draggable; they return as soon as there's space. */
-.time-label { display: none; }
-@media (min-width: 400px) { .time-label { display: inline; } }
-
-/* Give the transport buttons a touch more breathing room to shrink
-   before the row would ever need to wrap. */
-@media (max-width: 420px) {
-  .control-btn { padding: 0.2rem 0.3rem !important; font-size: 0.65rem !important; }
-  .player-controls { gap: 0.2rem !important; }
-  #player-title, #player-artist { max-width: 26vw; }
-  #custom-player-bar { gap: 0.35rem !important; }
-  .player-menu-panel { min-width: 9.5rem; right: -0.5rem; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
