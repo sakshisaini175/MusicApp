@@ -1,3 +1,15 @@
+:root {
+  /* One tuned scale drives spacing everywhere, so the shape of the UI
+     is identical on a phone, a tablet and a 27" monitor -- only the
+     available width changes, never the layout logic. */
+  --shell-max: 900px;
+  --pad: 1rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
 body {
     font-family: 'Inter', sans-serif;
     margin: 0;
@@ -6,6 +18,64 @@ body {
     background-size: 400% 400%;
     animation: gradientShift 15s ease infinite;
 }
+
+/* ---------------------------------------------------------------
+   Layout shell
+   All page content lives inside a centered column capped at
+   --shell-max. Under that width (phones, small tablets) it simply
+   fills the viewport, so mobile isn't a "different app" -- it's the
+   same column, just narrower.
+   ----------------------------------------------------------------*/
+.app-shell {
+  width: 100%;
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.app-shell-inner {
+  width: 100%;
+  max-width: var(--shell-max);
+}
+
+.app-pad { padding-left: var(--pad); padding-right: var(--pad); }
+
+@media (min-width: 640px)  { :root { --pad: 1.25rem; } }
+@media (min-width: 1024px) { :root { --pad: 1.5rem; } }
+
+/* Category cards: same pill-card component everywhere, the grid just
+   gains columns as room appears instead of swapping to a different
+   layout style. */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+@media (min-width: 480px)  { .category-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 768px)  { .category-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .category-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+#category-cards > * {
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  background: linear-gradient(135deg, rgba(6,182,212,0.18), rgba(15,23,42,0.4));
+  border: 1px solid rgba(148,163,184,0.15);
+  cursor: pointer;
+  white-space: normal;
+}
+
+/* "Favorites" button label collapses to just the heart on the
+   narrowest phones, then reappears once there's room -- so the
+   control never forces the row to wrap or grow full-width. */
+.fav-label { display: none; }
+@media (min-width: 380px) { .fav-label { display: inline; } }
 
 @keyframes gradientShift {
     0% { background-position: 0% 50%; }
@@ -60,19 +130,36 @@ footer.playing { box-shadow: 0 -4px 20px rgba(34, 211, 238, 0.5); transition: bo
 .equalizer span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes bounce { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1.2); } }
 
-/* Responsive tweaks */
-@media (max-width: 640px) {
-  header h1 { font-size: 1.5rem; }
-  #search-input { min-width: 100%; }
-  #song-list-container { padding-bottom: 9rem !important; }
-  footer { flex-direction: column; gap: 0.5rem; }
+/* ---------------------------------------------------------------
+   Song rows
+   The rows themselves are built by app.js/playlist.js, which weren't
+   part of this upload -- these rules constrain whatever markup lands
+   inside #song-list so a row can never overflow or force the page
+   wider than the shell on a small screen. Share app.js/playlist.js
+   if you want the row's internal spacing (title/artist/Play/heart)
+   tuned to match this same shell system exactly.
+   ----------------------------------------------------------------*/
+#song-list > * {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+  flex-wrap: nowrap;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.6rem;
+}
+#song-list > * * { min-width: 0; }
+
+/* Footer never grows taller than one row on any device; controls
+   simply shrink instead of stacking. */
+footer .app-shell-inner,
+footer > div {
+  flex-wrap: nowrap;
 }
 
-@media (min-width: 641px) and (max-width: 1024px) {
-  #category-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  #song-list-container { padding-bottom: 8.5rem !important; }
-}
-
-@media (min-width: 1025px) {
-  #category-cards { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+/* Safety net: on genuinely tiny screens (<360px), allow the footer's
+   two halves to wrap onto two lines rather than clipping. */
+@media (max-width: 359px) {
+  footer .app-shell-inner { flex-wrap: wrap; justify-content: center; }
 }
