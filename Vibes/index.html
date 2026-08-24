@@ -36,56 +36,46 @@
   <div class="app-shell flex-1 flex flex-col min-h-screen relative">
 
     <!-- Header Navigation -->
+<!-- Unified Responsive Header Navigation -->
   <header class="sticky top-0 z-30 header-ios-fix border-b border-white/5 bg-[#0b061d]/90 backdrop-blur-md">
-    <div class="app-shell-inner mx-auto app-pad py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4 min-h-[56px] relative">
+    <div class="app-shell-inner mx-auto app-pad py-2 sm:py-3 flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-4">
       
-      <!-- Left side: Hamburger (Mobile) + Brand Logo -->
-      <div class="flex items-center gap-2.5 shrink-0">
-        <!-- Mobile Menu Toggle Button -->
-        <button id="mobile-menu-btn" class="flex md:hidden text-slate-300 hover:text-white p-1 transition" aria-label="Toggle navigation menu">
-          <i data-lucide="menu" class="w-6 h-6"></i>
-        </button>
-
-        <h1 class="font-sync text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
+      <!-- Top Row on Mobile / Left Column on Desktop -->
+      <div class="flex items-center justify-between w-full md:w-auto shrink-0 gap-3">
+        <!-- Brand Logo -->
+        <h1 class="font-sync text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent shrink-0">
           Vibes
         </h1>
+
+        <!-- Search & Heart Icon (Mobile Top Right) -->
+        <div class="flex md:hidden items-center gap-2 flex-1 max-w-[200px] justify-end min-w-0">
+          <div class="relative flex items-center w-full">
+            <input id="search-input-mobile" type="text" placeholder="Search..."
+                   class="w-full bg-white/10 border border-white/10 pl-7 pr-2.5 py-1 rounded-full text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 transition truncate">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 pointer-events-none"></i>
+          </div>
+          
+          <button id="favorites-btn-mobile" class="flex items-center justify-center w-7 h-7 rounded-full bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 transition shrink-0" title="Favorites">
+            <i data-lucide="heart" class="w-3.5 h-3.5 fill-current"></i>
+          </button>
+        </div>
       </div>
 
-      <!-- Desktop Navigation Links (Tablet & Landscape Desktop) -->
-      <nav class="hidden md:flex items-center gap-4 lg:gap-6 text-xs lg:text-sm font-medium text-slate-300">
-        <button class="nav-link text-white font-semibold border-b-2 border-cyan-400 pb-0.5" data-tab="home">Home</button>
-        <button class="nav-link hover:text-white transition" data-tab="trending">Trending</button>
-        <button class="nav-link hover:text-white transition" data-tab="favorites">Favorites</button>
-        <button class="nav-link hover:text-white transition" data-tab="playlist">My Playlist</button>
+      <!-- Horizontal Navigation Links (Same Menu for Mobile & Desktop) -->
+      <nav class="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar text-xs sm:text-sm font-medium text-slate-300 py-0.5 whitespace-nowrap">
+        <button id="nav-home" class="nav-link text-white font-semibold border-b-2 border-cyan-400 pb-0.5 shrink-0">Home</button>
+        <button id="nav-trending" class="nav-link hover:text-white transition shrink-0">Trending</button>
+        <button id="nav-favorites" class="nav-link hover:text-white transition shrink-0">Favorites</button>
+        <button id="nav-playlist" class="nav-link hover:text-white transition shrink-0">My Playlist</button>
       </nav>
 
-      <!-- Right Action Items (Search + Favorites) -->
-      <div class="flex items-center gap-2 sm:gap-3 flex-1 sm:flex-initial justify-end min-w-0">
-        <div id="search-container" class="relative flex items-center flex-1 sm:flex-initial max-w-[150px] sm:max-w-xs min-w-0">
-          <input id="search-input" type="text" placeholder="Search..."
-                 class="w-full bg-white/10 border border-white/10 pl-7 pr-2.5 py-1 sm:py-1.5 rounded-full text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 transition truncate">
+      <!-- Desktop Search Bar (Visible on Laptops / Tablets) -->
+      <div class="hidden md:flex items-center gap-3 shrink-0">
+        <div id="search-container" class="relative flex items-center">
+          <input id="search-input" type="text" placeholder="Search songs..."
+                 class="w-44 lg:w-56 bg-white/10 border border-white/10 pl-7 pr-3 py-1.5 rounded-full text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 transition">
           <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 pointer-events-none"></i>
         </div>
-        
-        <button id="favorites-btn" class="flex md:hidden items-center justify-center w-8 h-8 rounded-full bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 transition shrink-0" title="Favorites">
-          <i data-lucide="heart" class="w-4 h-4 fill-current"></i>
-        </button>
-      </div>
-
-      <!-- Mobile Dropdown Navigation Panel -->
-      <div id="mobile-nav-panel" class="hidden absolute top-full left-4 right-4 mt-2 bg-[#0f0728]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-3 shadow-2xl z-50 flex-col gap-1 md:hidden">
-        <button class="mobile-nav-item flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-white font-semibold bg-white/10 rounded-xl" data-tab="home">
-          <i data-lucide="home" class="w-4 h-4 text-cyan-400"></i> Home
-        </button>
-        <button class="mobile-nav-item flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-xl transition" data-tab="trending">
-          <i data-lucide="flame" class="w-4 h-4 text-amber-400"></i> Trending
-        </button>
-        <button class="mobile-nav-item flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-xl transition" data-tab="favorites">
-          <i data-lucide="heart" class="w-4 h-4 text-pink-400"></i> Favorites
-        </button>
-        <button class="mobile-nav-item flex items-center gap-3 w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-xl transition" data-tab="playlist">
-          <i data-lucide="list-music" class="w-4 h-4 text-purple-400"></i> My Playlist
-        </button>
       </div>
 
     </div>
@@ -300,8 +290,6 @@
       const menuPanel = document.getElementById('player-menu-panel');
       const speedButtons = document.querySelectorAll('.speed-btn');
       const downloadBtn = document.getElementById('download-btn');
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      const mobileNavPanel = document.getElementById('mobile-nav-panel');
 
       if (menuBtn && menuPanel) {
         menuBtn.addEventListener('click', (e) => {
@@ -322,30 +310,17 @@
         });
       }
 
-      if (mobileMenuBtn && mobileNavPanel) {
-        mobileMenuBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          mobileNavPanel.classList.toggle('hidden');
-          mobileNavPanel.classList.toggle('flex');
-        });
+      // Sync Mobile and Desktop Search Inputs
+      const desktopSearch = document.getElementById('search-input');
+      const mobileSearch = document.getElementById('search-input-mobile');
 
-        // Close dropdown when tapping any menu link
-        const mobileNavItems = mobileNavPanel.querySelectorAll('.mobile-nav-item');
-        mobileNavItems.forEach(item => {
-          item.addEventListener('click', () => {
-            mobileNavPanel.classList.add('hidden');
-            mobileNavPanel.classList.remove('flex');
-          });
-        });
-
-        document.addEventListener('click', (e) => {
-          if (!mobileNavPanel.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
-            mobileNavPanel.classList.add('hidden');
-            mobileNavPanel.classList.remove('flex');
-          }
+      if (mobileSearch && desktopSearch) {
+        mobileSearch.addEventListener('input', (e) => {
+          desktopSearch.value = e.target.value;
+          desktopSearch.dispatchEvent(new Event('input'));
         });
       }
-
+      
       speedButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
           const rate = parseFloat(btn.dataset.speed);
