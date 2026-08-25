@@ -7,8 +7,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve index.html, css/, and js/ directly from the root folder
-app.use(express.static(__dirname));
+// Only serve static files locally; Vercel static routing handles this automatically in production
+if (process.env.NODE_ENV !== 'production') {
+  app.use(express.static(__dirname));
+}
 
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
@@ -146,5 +148,11 @@ app.get('/api/song/download', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+// Run locally if executed directly, but EXPORT app for Vercel
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+}
+
+// CRITICAL FOR VERCEL: Export express app module
+module.exports = app;
