@@ -55,7 +55,7 @@ app.get('/api/songs', async (req, res) => {
   }
 });
 
-// GET MP3 STREAM & DOWNLOAD URL using RapidAPI Downloader
+// GET MP3 STREAM & DOWNLOAD URL using youtube-mp36 endpoint
 app.get('/api/song/download', async (req, res) => {
   try {
     const { videoId } = req.query;
@@ -64,93 +64,37 @@ app.get('/api/song/download', async (req, res) => {
     }
 
     if (!RAPIDAPI_KEY) {
-      console.error('[Config Error] RAPIDAPI_KEY missing from environment variables');
-      return res.status(500).json({ success: false, error: 'API key missing on server' });
+      return res.status(500).json({ success: false, error: 'RAPIDAPI_KEY missing' });
     }
 
-    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
     console.log(`[Download Request] Processing videoId: ${videoId}`);
 
-    // Step 1: Initiate download request
-    const initResponse = await axios.get('https://youtube-mp3-downloader4.p.rapidapi.com/download.php', {
-      params: {
-        format: 'mp3',
-        url: videoUrl
-      },
+    const response = await axios.get('https://youtube-mp36.p.rapidapi.com/dl', {
+      params: { id: videoId },
       headers: {
         'x-rapidapi-key': RAPIDAPI_KEY,
-        'x-rapidapi-host': 'youtube-mp3-downloader4.p.rapidapi.com',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'Accept': 'application/json, text/plain, */*',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Cache-Control': 'no-cache'
+        'x-rapidapi-host': 'youtube-mp36.p.rapidapi.com'
       }
     });
 
-    const initData = initResponse.data;
-    console.log('[API Init Response]:', initData.title || initData.id);
-
-    // If direct URL is ready immediately
-    if (initData.url || initData.download_url) {
-      const directUrl = initData.url || initData.download_url;
+    const data = response.data;
+    
+    if (data && (data.status === 'ok' || data.link)) {
+      const audioUrl = data.link;
       return res.json({
         success: true,
         videoId: videoId,
-        streamUrl: directUrl,
-        downloadUrl: directUrl,
-        title: initData.title || ''
+        streamUrl: audioUrl,
+        downloadUrl: audioUrl,
+        title: data.title || ''
       });
     }
 
-    // Step 2: Poll progress_url if provided
-    if (initData.progress_url) {
-      let attempts = 0;
-      const maxAttempts = 25;
-
-      while (attempts < maxAttempts) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        const progressResponse = await axios.get(initData.progress_url, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
-          }
-        });
-        const progressData = progressResponse.data;
-
-        // 1. Check plain fields first
-        let finalUrl = progressData.download_url || progressData.url || progressData.link;
-
-        // 2. If url is not in top-level JSON, extract from base64 HTML content
-        if (!finalUrl && progressData.content) {
-          try {
-            const decodedHtml = Buffer.from(progressData.content, 'base64').toString('utf-8');
-            const hrefMatch = decodedHtml.match(/href=["'](https?:[^"']+)["']/i);
-            if (hrefMatch && hrefMatch[1]) {
-              finalUrl = hrefMatch[1];
-            }
-          } catch (e) {
-            console.error('Error decoding content:', e);
-          }
-        }
-
-        if (finalUrl) {
-          console.log(`[Success] Extracted URL on attempt ${attempts + 1}:`, finalUrl);
-          return res.json({
-            success: true,
-            videoId: videoId,
-            streamUrl: finalUrl,
-            downloadUrl: finalUrl,
-            title: initData.title || (progressData.info && progressData.info.title) || ''
-          });
-        }
-
-        attempts++;
-      }
-
-      return res.status(504).json({ success: false, error: 'Conversion timed out. Please try again.' });
-    }
-
-    return res.status(500).json({ success: false, error: 'No stream available' });
+    return res.status(500).json({ 
+      success: false, 
+      error: 'Failed to extract stream', 
+      details: data 
+    });
 
   } catch (error) {
     console.error('[RapidAPI Error Detail]:', error.response?.data || error.message);
