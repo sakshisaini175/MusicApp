@@ -1,5 +1,5 @@
 let currentCategoryId = "sad";
-let currentOffset = 0;
+let nextPageToken = null;
 let isSearchMode = false;
 let currentSearchQuery = "";
 let isLoading = false;
@@ -39,15 +39,6 @@ function refreshDisplayAds() {
         // Replace this block with your ad network's script tag or iframe reload function
   }
 }
-
-const categoryQueries = {
-  sad: '("hindi sad" OR "punjabi sad" OR "bollywood sad" OR Arijit) AND mediatype:audio',
-  lofi: '("hindi lofi" OR "punjabi lofi" OR "bollywood lofi" OR "desi lofi") AND mediatype:audio',
-  party: '("dj hindi" OR "dj punjabi" OR "party song" OR "marriage song" OR "shaadi song") AND mediatype:audio',
-  bhajan: '("bhajan" OR "gurbani" OR "kirtan" OR "aarti") AND mediatype:audio',
-  qawwali: '("qawwali" OR "qawali" OR "sufi hindi" OR "nusrat fateh ali khan") AND mediatype:audio'
-};
-
 
 function renderCategoryCards() {
   const container = document.getElementById('category-cards');
@@ -103,7 +94,7 @@ function showSkeletons(count = 6) {
 }
 
 async function resetAndFetch() {
-  currentOffset = 0;
+  nextPageToken = null;
   hasMore = true;
   currentPlaylist = [];
   renderCategoryCards();
@@ -122,52 +113,64 @@ async function fetchNextBatch() {
   if (isLoading || !hasMore || isShowingFavorites) return;
   isLoading = true;
 
-  // Updated search query builder in fetchNextBatch():
-  let searchQuery = isSearchMode
-    ? `(${currentSearchQuery}) AND mediatype:audio`
-    : categoryQueries[currentCategoryId] || '("hindi songs") AND mediatype:audio';
+  console.log('[Infinite Scroll] Fetching next batch...', { nextPageToken, currentCategoryId });
 
-  const page = Math.floor(currentOffset / BATCH_LIMIT) + 1;
-  const apiUrl = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(searchQuery)}+AND+mediatype%3Aaudio&fl[]=identifier,title,creator&sort[]=downloads+desc&rows=${BATCH_LIMIT}&page=${page}&output=json`;
+  // Build Express API endpoint query parameters
+  const params = new URLSearchParams();
+  if (isSearchMode && currentSearchQuery) {
+    params.append('query', currentSearchQuery);
+  } else {
+    params.append('category', currentCategoryId);
+  }
+  
+  // Pass token for page 2+
+  if (nextPageToken) {
+    params.append('pageToken', nextPageToken);
+  }
+
+  const apiUrl = `/api/songs?${params.toString()}`;
 
   try {
     const response = await fetch(apiUrl);
     const data = await response.json();
-    const docs = data.response?.docs || [];
 
-    if (docs.length > 0) {
+    if (data.success && Array.isArray(data.songs) && data.songs.length > 0) {
       const existingIds = new Set(currentPlaylist.map(s => s.id));
-      const filteredTracks = docs
-        .filter(item => item.identifier && !existingIds.has(item.identifier))
-        .map((item, idx) => ({
-          id: item.identifier,
-          title: item.title || `Track ${currentPlaylist.length + idx + 1}`,
-          artist: item.creator || "Hindi / Punjabi Artist"
-        }));
+      const filteredTracks = data.songs.filter(item => item.id && !existingIds.has(item.id));
 
       if (filteredTracks.length > 0) {
         appendSongsToList(filteredTracks);
       }
 
-      currentOffset += docs.length;
-
-      if (docs.length < BATCH_LIMIT) {
-        hasMore = false;
-      }
+      nextPageToken = data.nextPageToken || data.next_page_token || null;
+      hasMore = Boolean(nextPageToken);
+      console.log('[Infinite Scroll] Batch loaded. New token:', nextPageToken, 'Has more:', hasMore);
     } else {
       hasMore = false;
-      if (currentOffset === 0 && window.fallbackSongs) {
+      if (currentPlaylist.length === 0 && window.fallbackSongs) {
         appendSongsToList(window.fallbackSongs[currentCategoryId] || []);
       }
     }
   } catch (err) {
     console.warn("Fetch error:", err);
-    if (currentOffset === 0 && window.fallbackSongs) {
+    if (currentPlaylist.length === 0 && window.fallbackSongs) {
       appendSongsToList(window.fallbackSongs[currentCategoryId] || []);
       hasMore = false;
     }
   } finally {
     isLoading = false;
+  }
+}
+
+// Global Scroll Handler Helper Function
+function handleScrollCheck(target) {
+  const scrollTop = target.scrollTop || window.scrollY || document.documentElement.scrollTop;
+  const clientHeight = target.clientHeight || window.innerHeight;
+  const scrollHeight = target.scrollHeight || document.documentElement.scrollHeight;
+
+  // Trigger next batch fetch when within 400px of bottom
+  if (Math.ceil(scrollTop + clientHeight) >= scrollHeight - 400) {
+    fetchNextBatch();
   }
 }
 
@@ -197,7 +200,7 @@ function toggleFavoriteSong(song, buttonElement = null) {
         if (parentRow) parentRow.remove();
       }
       if (currentPlaylist.length === 0 && container) {
-        container.innerHTML = `<p class="text-xs text-slate-400 italic p-4 text-center">No favorites added yet. Tap ❤ on any song to save it here.</p>`;
+        container.innerHTML = `<p class="text-xs text-slate-400 italic p-4 text-center">No favorites added yet. Tap ♥ on any song to save it here.</p>`;
       }
       if (songCountBadge) songCountBadge.innerText = `${currentPlaylist.length} Songs Loaded`;
     } else if (buttonElement) {
@@ -228,7 +231,11 @@ function appendSongsToList(songs) {
   }
 
   songs.forEach((song) => {
-    currentPlaylist.push(song);
+    // Avoid push duplication if song is already present
+    if (!currentPlaylist.some(s => s.id === song.id)) {
+      currentPlaylist.push(song);
+    }
+    
     let favorites = JSON.parse(localStorage.getItem('vibes_favorites')) || [];
     let isFav = favorites.some(f => f.id === song.id);
 
@@ -245,8 +252,8 @@ function appendSongsToList(songs) {
 
     item.innerHTML = `
       <div class="flex items-center gap-3 overflow-hidden flex-1 min-w-0">
-        <div class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0 group-hover:bg-cyan-400 group-hover:text-black transition">
-          <i data-lucide="music" class="w-4 h-4"></i>
+        <div class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0 group-hover:bg-cyan-400 group-hover:text-black transition overflow-hidden">
+          ${song.thumbnail ? `<img src="${song.thumbnail}" class="w-full h-full object-cover rounded-lg" alt="" />` : '<i data-lucide="music" class="w-4 h-4"></i>'}
         </div>
         <div class="overflow-hidden flex-1">
           <h5 class="font-semibold text-xs sm:text-sm truncate text-white group-hover:text-cyan-300 transition">${song.title}</h5>
@@ -358,7 +365,7 @@ function updateActiveSongUI() {
 }
 
 async function executePlaySong(song) {
-  currentlyPlayingSong = song; // FIX: Update global playing track reference
+  currentlyPlayingSong = song;
   currentSongIndex = currentPlaylist.findIndex(s => s.id === song.id);
 
   const titleEl = document.getElementById('player-title');
@@ -371,17 +378,15 @@ async function executePlaySong(song) {
   if (artistEl) artistEl.innerText = song.title;
 
   try {
-    const metaRes = await fetch(`https://archive.org/metadata/${song.id}`);
-    const metaData = await metaRes.json();
-    const mp3File = metaData.files ? metaData.files.find(f => f.name && f.name.endsWith('.mp3')) : null;
+    const downloadRes = await fetch(`/api/song/download?videoId=${song.id}`);
+    const downloadData = await downloadRes.json();
 
-    if (mp3File) {
-      const realStreamUrl = `https://archive.org/download/${song.id}/${encodeURIComponent(mp3File.name)}`;
-      setPlayerAndPlay(realStreamUrl, song);
+    if (downloadData.success && downloadData.streamUrl) {
+      setPlayerAndPlay(downloadData.streamUrl, song);
       return;
     }
   } catch (err) {
-    console.warn("Metadata fetch error:", err);
+    console.warn("Backend MP3 stream extraction error:", err);
   }
 
   if (song.streamUrl) {
@@ -427,7 +432,7 @@ function showFavorites() {
   currentPlaylist = [];
 
   if (favorites.length === 0) {
-    container.innerHTML = `<p class="text-xs text-slate-400 italic p-4 text-center">No favorites added yet. Tap ❤ on any song to save it here.</p>`;
+    container.innerHTML = `<p class="text-xs text-slate-400 italic p-4 text-center">No favorites added yet. Tap ♥ on any song to save it here.</p>`;
     if (songCountBadge) songCountBadge.innerText = `0 Songs Loaded`;
     return;
   }
@@ -485,13 +490,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Infinite Scroll Listener
   if (songListContainer) {
-    songListContainer.addEventListener('scroll', () => {
-      const { scrollTop, scrollHeight, clientHeight } = songListContainer;
-      if (scrollTop + clientHeight >= scrollHeight - 300) {
-        fetchNextBatch();
-      }
-    });
+    songListContainer.addEventListener('scroll', (e) => handleScrollCheck(e.target));
   }
+
+  window.addEventListener('scroll', () => {
+    handleScrollCheck(document.documentElement);
+  });
 
   // Transport Controls
   if (prevBtn) {

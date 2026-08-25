@@ -1,0 +1,23 @@
+{
+  "name": "music-player-app",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "description": "Vibes is a simple web-based music player that streams **Hindi & Punjabi songs** from Archive.org and other free sources.  \r It’s designed with an Indian audience in mind, featuring categories like **Sad Songs, Lofi Beats, Chill Songs, Bhajan, and Qawwali**.",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.19.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
