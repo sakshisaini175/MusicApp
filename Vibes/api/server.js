@@ -63,6 +63,11 @@ app.get('/api/song/download', async (req, res) => {
       return res.status(400).json({ success: false, error: 'videoId is required' });
     }
 
+    if (!RAPIDAPI_KEY) {
+      console.error('[Config Error] RAPIDAPI_KEY missing from environment variables');
+      return res.status(500).json({ success: false, error: 'API key missing on server' });
+    }
+
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
     console.log(`[Download Request] Processing videoId: ${videoId}`);
 
@@ -75,8 +80,10 @@ app.get('/api/song/download', async (req, res) => {
       headers: {
         'x-rapidapi-key': RAPIDAPI_KEY,
         'x-rapidapi-host': 'youtube-mp3-downloader4.p.rapidapi.com',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'application/json, text/plain, */*'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache'
       }
     });
 
@@ -101,9 +108,13 @@ app.get('/api/song/download', async (req, res) => {
       const maxAttempts = 25;
 
       while (attempts < maxAttempts) {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 sec
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        const progressResponse = await axios.get(initData.progress_url);
+        const progressResponse = await axios.get(initData.progress_url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+          }
+        });
         const progressData = progressResponse.data;
 
         // 1. Check plain fields first
