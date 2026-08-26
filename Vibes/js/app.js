@@ -595,6 +595,25 @@ document.addEventListener('DOMContentLoaded', () => {
       resetAndFetch();
     };
 
+    let debounceTimer;
+    // Listen to 'input' event for live typing search with a 400ms delay
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+
+      // If input is cleared, reset instantly without waiting for debounce
+      if (query === '') {
+        clearTimeout(debounceTimer);
+        triggerSearchReset();
+        return;
+      }
+
+      // Otherwise, debounce the search query as the user types
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        triggerSearchReset();
+      }, 400); // Wait 400ms after user stops typing to fire search
+    });
+
     searchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         triggerSearchReset();
