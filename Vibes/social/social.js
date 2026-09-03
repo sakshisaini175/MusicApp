@@ -45,19 +45,19 @@
   $('social-load-url').addEventListener('click', async () => {
     const url = $('social-url-input').value.trim();
     if (!url) { setStatus('Enter a direct media URL first.'); return; }
-    setStatus('Fetching media from URL...');
+    setStatus('Loading and converting external URL to audio...');
     $('social-process').disabled = true;
     try {
-      const response = await fetch(url);
+      const response = await fetch(`${window.VIBES_API_BASE || ''}/api/social/media?url=${encodeURIComponent(url)}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       state.video = isVideoSource(url) ? Object.assign(document.createElement('video'), {
-        src: url, controls: true, playsInline: true
+        src: `${window.VIBES_API_BASE || ''}/api/social/media?url=${encodeURIComponent(url)}`, controls: true, playsInline: true
       }) : null;
       $('social-upload-label').textContent = 'Select MP3, MP4, WAV, 3GP, M4A, etc.';
       $('social-file-input').value = '';
-      await decodeMedia(await response.arrayBuffer(), 'URL', Boolean(state.video));
+      await decodeMedia(await response.arrayBuffer(), 'External URL', Boolean(state.video));
     } catch (error) {
-      setStatus('Could not load URL. It must allow browser access (CORS).');
+      setStatus('Could not load URL. Use a YouTube link or a direct audio/video file URL.');
       console.error('[Social] URL error:', error);
     }
   });
