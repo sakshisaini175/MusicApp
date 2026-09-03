@@ -1,0 +1,60 @@
+<section id="social-view" class="social-view hidden" aria-labelledby="social-title">
+  <div class="social-heading">
+    <div>
+      <p class="social-kicker">Creator tools</p>
+      <h2 id="social-title">Social Media Audio/Video Compressor</h2>
+      <p>Upload a track or video, or paste a direct media URL to smooth out its dynamics before sharing.</p>
+    </div>
+    <span class="social-status-pill"><span></span> Local processing</span>
+  </div>
+
+  <div class="social-workspace">
+    <div class="social-form-panel">
+      <label class="social-label" for="social-file-input">Option 1: Upload file</label>
+      <button type="button" id="social-upload-box" class="social-upload-box">
+        <span class="social-upload-icon" aria-hidden="true"><i data-lucide="folder-open"></i></span>
+        <span id="social-upload-label">Select MP3, MP4, WAV, 3GP, M4A, etc.</span>
+        <input type="file" id="social-file-input" accept="audio/*,video/*,.mp3,.m4a,.wav,.ogg,.aac,.mp4,.3gp,.webm,.mkv">
+      </button>
+
+      <label class="social-label" for="social-url-input">Option 2: Direct media URL</label>
+      <div class="social-url-row">
+        <input type="url" id="social-url-input" placeholder="https://example.com/media.mp3" autocomplete="url">
+        <button type="button" id="social-load-url" class="social-secondary-button">Load</button>
+      </div>
+
+      <label class="social-label" for="social-export-format">Export format option</label>
+      <select id="social-export-format" class="social-select">
+        <option value="wav">WAV Audio File</option>
+        <option value="mp3">MP3 Audio File</option>
+        <option value="3gp">3GP Audio File</option>
+        <option value="mp4" id="social-mp4-option" disabled>MP4 Video</option>
+      </select>
+
+      <button type="button" id="social-process" class="social-primary-button" disabled>
+        <i data-lucide="wand-sparkles"></i> Process &amp; Compress Audio
+      </button>
+      <p id="social-status" class="social-status" role="status" aria-live="polite"></p>
+    </div>
+
+    <aside class="social-info-panel">
+      <i data-lucide="audio-lines"></i>
+      <strong>Ready for sharing</strong>
+      <span>Use compressed audio for WhatsApp or Instagram Status.</span>
+    </aside>
+  </div>
+
+  <section id="social-preview" class="social-preview" hidden>
+    <div class="social-preview-heading">
+      <div>
+        <p class="social-kicker">Output</p>
+        <h3>Processed media result</h3>
+      </div>
+      <button type="button" id="social-clear" class="social-icon-button" title="Clear result" aria-label="Clear result">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <div id="social-media-container" class="social-media-container"></div>
+    <div id="social-download-group" class="social-download-group"></div>
+  </section>
+</section>

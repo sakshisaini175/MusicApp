@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Vibes - Free Music Player</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="social/social.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -61,6 +62,7 @@
       <button id="nav-home" data-tab="home" class="nav-link text-white font-semibold border-b-2 border-cyan-400 pb-0.5 shrink-0">Home</button>
       <!--<button id="nav-trending" data-tab="trending" class="nav-link hover:text-white transition shrink-0">Trending</button>-->
       <button id="nav-favorites" data-tab="favorites" class="nav-link hover:text-white transition shrink-0">Favorites</button>
+      <button id="nav-social" data-tab="social" class="nav-link hover:text-white transition shrink-0">Social</button>
       <!--<button id="nav-playlist" data-tab="playlist" class="nav-link hover:text-white transition shrink-0">My Playlist</button>-->
     </nav>
 
@@ -107,6 +109,10 @@
       <!-- Clearance spacer forces bottom items up past floating player -->
       <div class="h-44 w-full shrink-0" aria-hidden="true"></div>
 
+    </main>
+
+    <main id="social-content" class="flex-1 app-pad py-4 hidden">
+      <div id="social-content-slot"></div>
     </main>
 
   </div>
@@ -219,6 +225,34 @@
 
   <script src="js/playlist.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    fetch('social/index.html')
+      .then((response) => response.text())
+      .then((markup) => {
+        document.getElementById('social-content-slot').innerHTML = markup;
+        const socialScript = document.createElement('script');
+        socialScript.src = 'social/social.js';
+        document.body.appendChild(socialScript);
+        window.lucide?.createIcons();
+        const socialView = document.getElementById('social-view');
+        const homeView = document.getElementById('song-list-container');
+        const socialContent = document.getElementById('social-content');
+        const socialNav = document.getElementById('nav-social');
+        const showHome = () => {
+          socialContent.classList.add('hidden');
+          homeView.classList.remove('hidden');
+          socialNav.classList.remove('text-white', 'font-semibold', 'border-b-2', 'border-cyan-400', 'pb-0.5');
+        };
+        socialNav.addEventListener('click', () => {
+          homeView.classList.add('hidden');
+          socialContent.classList.remove('hidden');
+          socialView.classList.remove('hidden');
+        });
+        document.getElementById('nav-home').addEventListener('click', showHome);
+        document.getElementById('nav-favorites').addEventListener('click', showHome);
+      })
+      .catch((error) => console.error('[Social] Unable to load feature view:', error));
+  </script>
   <script>
     lucide.createIcons();
 
