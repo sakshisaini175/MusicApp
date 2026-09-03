@@ -3,25 +3,19 @@
     <div>
       <p class="social-kicker">Creator tools</p>
       <h2 id="social-title">Social Media Audio/Video Compressor</h2>
-      <p>Upload a track or video, or paste a direct media URL to smooth out its dynamics before sharing.</p>
+      <p>Upload a track or video to smooth out its dynamics before sharing.</p>
     </div>
     <span class="social-status-pill"><span></span> Local processing</span>
   </div>
 
   <div class="social-workspace">
     <div class="social-form-panel">
-      <label class="social-label" for="social-file-input">Option 1: Upload file</label>
+      <label class="social-label" for="social-file-input">Upload file</label>
       <button type="button" id="social-upload-box" class="social-upload-box">
         <span class="social-upload-icon" aria-hidden="true"><i data-lucide="folder-open"></i></span>
         <span id="social-upload-label">Select MP3, MP4, WAV, 3GP, M4A, etc.</span>
         <input type="file" id="social-file-input" accept="audio/*,video/*,.mp3,.m4a,.wav,.ogg,.aac,.mp4,.3gp,.webm,.mkv">
       </button>
-
-      <label class="social-label" for="social-url-input">Option 2: Direct media URL</label>
-      <div class="social-url-row">
-        <input type="url" id="social-url-input" placeholder="https://example.com/media.mp3" autocomplete="url">
-        <button type="button" id="social-load-url" class="social-secondary-button">Load</button>
-      </div>
 
       <label class="social-label" for="social-export-format">Export format option</label>
       <select id="social-export-format" class="social-select">

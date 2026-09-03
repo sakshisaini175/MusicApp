@@ -88,7 +88,6 @@
 .social-form-panel > .social-label:first-child { margin-top: 0; }
 
 .social-upload-box,
-.social-url-row input,
 .social-select {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, .13);
@@ -110,15 +109,10 @@
   font-size: .85rem;
 }
 .social-upload-box:hover,
-.social-url-row input:focus,
 .social-select:focus { border-color: #22d3ee; background-color: rgba(34, 211, 238, .06); }
 .social-upload-box input { display: none; }
 .social-upload-icon { color: #fde68a; }
 .social-upload-icon svg { width: 1.1rem; height: 1.1rem; }
-.social-url-row { display: flex; gap: .6rem; }
-.social-url-row input { min-width: 0; padding: .7rem .85rem; font-size: .82rem; }
-.social-url-row input::placeholder { color: #64748b; }
-.social-secondary-button,
 .social-primary-button,
 .social-download-button {
   border: 0;
@@ -126,8 +120,6 @@
   cursor: pointer;
   font-weight: 700;
 }
-.social-secondary-button { padding: 0 1rem; color: #f8fafc; background: rgba(99, 102, 241, .35); }
-.social-secondary-button:hover { background: rgba(99, 102, 241, .55); }
 .social-select { padding: .7rem .85rem; font-size: .82rem; }
 .social-select option { color: #f8fafc; background: #160b33; }
 .social-primary-button {

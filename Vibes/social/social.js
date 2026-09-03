@@ -6,19 +6,6 @@
   function isVideoSource(name, type = '') {
     return type.startsWith('video/') || /\.(mp4|3gp|mkv|webm)(?:$|\?)/i.test(name);
   }
-  function getYouTubeVideoId(value) {
-    try {
-      const url = new URL(value);
-      if (url.hostname === 'youtu.be') return url.pathname.slice(1).split('/')[0] || null;
-      if (/(^|\.)youtube\.com$/.test(url.hostname)) {
-        return url.searchParams.get('v') || url.pathname.match(/\/(?:shorts|embed|live)\/([^/?]+)/)?.[1] || null;
-      }
-    } catch (error) {
-      return null;
-    }
-    return null;
-  }
-
   async function decodeMedia(arrayBuffer, sourceName, isVideo) {
     setStatus(`Decoding media from ${sourceName}...`);
     $('social-process').disabled = true;
@@ -47,46 +34,10 @@
     const file = event.target.files[0];
     if (!file) return;
     $('social-upload-label').textContent = `Selected: ${file.name}`;
-    $('social-url-input').value = '';
     state.video = isVideoSource(file.name, file.type) ? Object.assign(document.createElement('video'), {
       src: URL.createObjectURL(file), controls: true, playsInline: true
     }) : null;
     await decodeMedia(await file.arrayBuffer(), file.name, Boolean(state.video));
-  });
-
-  $('social-load-url').addEventListener('click', async () => {
-    const url = $('social-url-input').value.trim();
-    if (!url) { setStatus('Enter a direct media URL first.'); return; }
-    setStatus('Loading and converting external URL to audio...');
-    $('social-process').disabled = true;
-    try {
-      const videoId = getYouTubeVideoId(url);
-      const endpoint = videoId
-        ? `${window.VIBES_API_BASE || ''}/api/song/download?videoId=${encodeURIComponent(videoId)}&stream=1`
-        : `${window.VIBES_API_BASE || ''}/api/social/media?url=${encodeURIComponent(url)}`;
-      const response = await fetch(endpoint);
-      if (!response.ok) {
-        let details = '';
-        try {
-          const errorData = await response.json();
-          details = errorData.error || errorData.providerError || '';
-        } catch (parseError) {
-          details = '';
-        }
-        throw new Error(details || `HTTP ${response.status}`);
-      }
-      state.video = isVideoSource(url) ? Object.assign(document.createElement('video'), {
-        src: endpoint, controls: true, playsInline: true
-      }) : null;
-      $('social-upload-label').textContent = 'Select MP3, MP4, WAV, 3GP, M4A, etc.';
-      $('social-file-input').value = '';
-      await decodeMedia(await response.arrayBuffer(), 'External URL', Boolean(state.video));
-    } catch (error) {
-      setStatus(error.message.includes('RAPIDAPI') || error.message.includes('YouTube')
-        ? `YouTube conversion failed: ${error.message}`
-        : `Could not load URL: ${error.message}`);
-      console.error('[Social] URL error:', error);
-    }
   });
 
   $('social-process').addEventListener('click', async () => {
