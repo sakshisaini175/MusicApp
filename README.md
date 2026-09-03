@@ -15,6 +15,7 @@ It's designed with an Indian audience in mind, featuring categories like **Sad, 
 - **Animated gradient background and card hover effects** for a lively UI  
 - **Animated loading skeletons** while tracks load for a polished experience  
 - **Responsive layout** with compact footer controls on small screens  
+- **Social media compressor** for uploading audio/video files, compressing dynamics, and exporting share-ready files for WhatsApp or Instagram Status  
 - **Monetization**: Programmatic audio ads and display banner ads  
 - **Vercel Analytics**: Integrated Vercel Web Analytics for tracking user engagement
 - **Developer-friendly**: Right-click and inspect shortcuts disabled for security
@@ -33,6 +34,10 @@ Vibes/
 ├── js/
 │   ├── app.js         # Core app logic (API fetching, playback, UI updates, ads)
 │   └── playlist.js    # Category metadata and fallback songs
+├── social/
+│   ├── index.html      # Social media compressor interface
+│   ├── social.css      # Social feature styling
+│   └── social.js       # File processing, compression, preview, and downloads
 └── api/
     └── server.js      # Express backend (YouTube API search, MP3 conversion via RapidAPI)
 ```
@@ -119,6 +124,9 @@ Convert YouTube video to MP3 stream URL.
   }
   ```
 
+### Social media compressor
+The Social section accepts local audio and video files through **Upload file**. It uses the Web Audio API to apply dynamic compression, then provides downloadable WAV, MP3, 3GP, or video output where supported. Processed audio is played through the app's shared music player.
+
 ---
 
 ## 📡 External Services
@@ -174,3 +182,9 @@ Feel free to use, modify, and share.
 ---
 
 Built with ❤️ for music lovers by Sakshi Saini.
+
+---
+
+## 📸 App Screenshot
+
+![Vibes app screenshot](Vibes/Image.png)
