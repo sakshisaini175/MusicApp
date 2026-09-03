@@ -131,16 +131,16 @@ app.get('/api/song/download', async (req, res) => {
 
     return res.status(500).json({ 
       success: false, 
-      error: 'Failed to extract stream', 
-      details: data 
+      error: data?.msg || data?.message || 'Failed to extract stream',
+      details: data
     });
 
   } catch (error) {
     console.error('[RapidAPI Error Detail]:', error.response?.data || error.message);
-    res.status(500).json({ 
+    res.status(502).json({ 
       success: false, 
-      error: 'Failed to extract MP3 stream', 
-      details: error.response?.data || error.message 
+      error: error.response?.data?.msg || error.response?.data?.message || error.message || 'Failed to extract MP3 stream',
+      details: error.response?.data || error.message
     });
   }
 });
