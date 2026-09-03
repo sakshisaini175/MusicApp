@@ -49,7 +49,16 @@
     $('social-process').disabled = true;
     try {
       const response = await fetch(`${window.VIBES_API_BASE || ''}/api/social/media?url=${encodeURIComponent(url)}`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) {
+        let details = '';
+        try {
+          const errorData = await response.json();
+          details = errorData.error || errorData.providerError || '';
+        } catch (parseError) {
+          details = '';
+        }
+        throw new Error(details || `HTTP ${response.status}`);
+      }
       state.video = isVideoSource(url) ? Object.assign(document.createElement('video'), {
         src: `${window.VIBES_API_BASE || ''}/api/social/media?url=${encodeURIComponent(url)}`, controls: true, playsInline: true
       }) : null;
@@ -57,7 +66,9 @@
       $('social-file-input').value = '';
       await decodeMedia(await response.arrayBuffer(), 'External URL', Boolean(state.video));
     } catch (error) {
-      setStatus('Could not load URL. Use a YouTube link or a direct audio/video file URL.');
+      setStatus(error.message.includes('RAPIDAPI') || error.message.includes('YouTube')
+        ? `YouTube conversion failed: ${error.message}`
+        : `Could not load URL: ${error.message}`);
       console.error('[Social] URL error:', error);
     }
   });

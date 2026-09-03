@@ -38,7 +38,7 @@ async function extractYouTubeAudio(videoId) {
       'x-rapidapi-host': 'youtube-mp36.p.rapidapi.com'
     }
   });
-  if (!response.data?.link || (response.data.status && response.data.status !== 'ok')) {
+  if (!response.data?.link) {
     throw new Error(response.data?.msg || 'YouTube audio extraction failed');
   }
   return response.data;
@@ -159,7 +159,8 @@ app.get('/api/social/media', async (req, res) => {
     console.error('[Social YouTube Error]:', error.response?.data || error.message);
     if (!res.headersSent) res.status(502).json({
       success: false,
-      error: error.message || 'Unable to convert this YouTube URL to MP3'
+      error: error.message || 'Unable to convert this YouTube URL to MP3',
+      providerError: error.response?.data?.msg || error.response?.data?.message || undefined
     });
   }
 });
