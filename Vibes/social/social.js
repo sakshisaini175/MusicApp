@@ -6,6 +6,18 @@
   function isVideoSource(name, type = '') {
     return type.startsWith('video/') || /\.(mp4|3gp|mkv|webm)(?:$|\?)/i.test(name);
   }
+  function getYouTubeVideoId(value) {
+    try {
+      const url = new URL(value);
+      if (url.hostname === 'youtu.be') return url.pathname.slice(1).split('/')[0] || null;
+      if (/(^|\.)youtube\.com$/.test(url.hostname)) {
+        return url.searchParams.get('v') || url.pathname.match(/\/(?:shorts|embed|live)\/([^/?]+)/)?.[1] || null;
+      }
+    } catch (error) {
+      return null;
+    }
+    return null;
+  }
 
   async function decodeMedia(arrayBuffer, sourceName, isVideo) {
     setStatus(`Decoding media from ${sourceName}...`);
@@ -48,7 +60,11 @@
     setStatus('Loading and converting external URL to audio...');
     $('social-process').disabled = true;
     try {
-      const response = await fetch(`${window.VIBES_API_BASE || ''}/api/social/media?url=${encodeURIComponent(url)}`);
+      const videoId = getYouTubeVideoId(url);
+      const endpoint = videoId
+        ? `${window.VIBES_API_BASE || ''}/api/song/download?videoId=${encodeURIComponent(videoId)}&stream=1`
+        : `${window.VIBES_API_BASE || ''}/api/social/media?url=${encodeURIComponent(url)}`;
+      const response = await fetch(endpoint);
       if (!response.ok) {
         let details = '';
         try {
@@ -60,7 +76,7 @@
         throw new Error(details || `HTTP ${response.status}`);
       }
       state.video = isVideoSource(url) ? Object.assign(document.createElement('video'), {
-        src: `${window.VIBES_API_BASE || ''}/api/social/media?url=${encodeURIComponent(url)}`, controls: true, playsInline: true
+        src: endpoint, controls: true, playsInline: true
       }) : null;
       $('social-upload-label').textContent = 'Select MP3, MP4, WAV, 3GP, M4A, etc.';
       $('social-file-input').value = '';

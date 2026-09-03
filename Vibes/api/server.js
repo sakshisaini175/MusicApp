@@ -109,6 +109,17 @@ app.get('/api/song/download', async (req, res) => {
     
     if (data && (data.status === 'ok' || data.link)) {
       const audioUrl = data.link;
+      if (req.query.stream === '1') {
+        const audioResponse = await axios.get(audioUrl, {
+          responseType: 'stream',
+          timeout: 30000,
+          maxRedirects: 5
+        });
+        res.set('Content-Type', audioResponse.headers['content-type'] || 'audio/mpeg');
+        if (audioResponse.headers['content-length']) res.set('Content-Length', audioResponse.headers['content-length']);
+        audioResponse.data.on('error', (streamError) => res.destroy(streamError));
+        return audioResponse.data.pipe(res);
+      }
       return res.json({
         success: true,
         videoId: videoId,
