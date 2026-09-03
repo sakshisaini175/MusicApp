@@ -187,4 +187,5 @@ Built with ❤️ for music lovers by Sakshi Saini.
 
 ## 📸 App Screenshot
 
-![Vibes app screenshot](Vibes/Image.png)
+<img width="1897" height="1042" alt="Image" src="https://github.com/user-attachments/assets/b2854b7d-1861-4fab-8c8c-76af3624515d" />
+
