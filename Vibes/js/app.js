@@ -175,11 +175,16 @@ function handleScrollCheck(target) {
 }
 
 function updatePlayerFavIcon(songId) {
-  const playerFavBtn = document.getElementById('player-fav-btn');
-  if (!playerFavBtn) return;
+  const playerFavBtns = [
+    document.getElementById('player-fav-btn'),
+    document.getElementById('player-fav-btn-mobile')
+  ].filter(Boolean);
+  if (playerFavBtns.length === 0) return;
   const favs = JSON.parse(localStorage.getItem('vibes_favorites')) || [];
   const isFav = favs.some(f => f.id === songId);
-  playerFavBtn.innerHTML = `<i data-lucide="heart" class="w-4 h-4 ${isFav ? 'text-pink-500 fill-current' : ''}"></i>`;
+  playerFavBtns.forEach((button) => {
+    button.innerHTML = `<i data-lucide="heart" class="w-4 h-4 ${isFav ? 'text-pink-500 fill-current' : ''}"></i>`;
+  });
   if (window.lucide) lucide.createIcons();
 }
 
@@ -465,13 +470,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const shuffleBtn = document.getElementById('shuffle-btn');
   const repeatBtn = document.getElementById('repeat-btn');
   const equalizer = document.getElementById('player-equalizer');
-  const playerFavBtn = document.getElementById('player-fav-btn');
+  const playerFavBtns = [
+    document.getElementById('player-fav-btn'),
+    document.getElementById('player-fav-btn-mobile')
+  ].filter(Boolean);
 
   if (equalizer) equalizer.style.display = 'none';
 
   setInterval(refreshDisplayAds, BANNER_REFRESH_INTERVAL);
 
-  if (playerFavBtn) {
+  playerFavBtns.forEach((playerFavBtn) => {
     playerFavBtn.addEventListener('click', () => {
       if (!currentlyPlayingSong) return;
 
@@ -486,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       toggleFavoriteSong(currentlyPlayingSong, matchingListBtn);
     });
-  }
+  });
 
   // Infinite Scroll Listener
   if (songListContainer) {
