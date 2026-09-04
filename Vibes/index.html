@@ -121,7 +121,7 @@
   <!-- Bottom Floating Player Bar -->
   <footer class="fixed bottom-9 left-0 right-0 z-40 app-pad footer-ios-fix pointer-events-none">
     <div class="app-shell-inner mx-auto pointer-events-auto">
-      <div class="bg-gradient-to-r from-[#1a0e3b]/95 via-[#23124d]/95 to-[#160b33]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-2.5 sm:p-3 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3">
+      <div class="relative bg-gradient-to-r from-[#1a0e3b]/95 via-[#23124d]/95 to-[#160b33]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-2.5 sm:p-3 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3">
 
         <!-- Top/Left Track Info & Right Quick Actions in Mobile Row -->
         <div class="flex items-center justify-between w-full sm:w-1/3 min-w-0">
@@ -191,20 +191,22 @@
           </button>
 
           <!-- Dropdown Menu -->
-          <div id="player-menu-panel" class="player-menu-panel hidden absolute bottom-full right-0 mb-2 w-44 bg-[#0f0728] border border-white/10 rounded-xl p-2 shadow-2xl z-50">
-            <button id="download-btn" class="player-menu-item flex items-center gap-2 w-full text-left px-2 py-1.5 text-xs text-slate-300 hover:bg-white/10 rounded-lg">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i> Download track
-            </button>
-            <div class="h-px bg-white/10 my-1"></div>
-            <p class="text-[10px] uppercase text-slate-500 font-bold px-2 mb-1">Playback speed</p>
-            <div id="speed-options" class="grid grid-cols-3 gap-1">
-              <button class="speed-btn text-[10px] py-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 font-bold" data-speed="0.5">0.5x</button>
-              <button class="speed-btn text-[10px] py-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 font-bold" data-speed="0.75">0.75x</button>
-              <button class="speed-btn speed-active text-[10px] py-1 rounded bg-cyan-400 text-black font-bold" data-speed="1">1x</button>
-              <button class="speed-btn text-[10px] py-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 font-bold" data-speed="1.25">1.25x</button>
-              <button class="speed-btn text-[10px] py-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 font-bold" data-speed="1.5">1.5x</button>
-              <button class="speed-btn text-[10px] py-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 font-bold" data-speed="2">2x</button>
-            </div>
+        </div>
+
+        <!-- Shared dropdown for desktop and portrait mobile controls -->
+        <div id="player-menu-panel" class="player-menu-panel hidden absolute bottom-full right-0 mb-2 w-44 bg-[#0f0728] border border-white/10 rounded-xl p-2 shadow-2xl z-50">
+          <button id="download-btn" class="player-menu-item flex items-center gap-2 w-full text-left px-2 py-1.5 text-xs text-slate-300 hover:bg-white/10 rounded-lg">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> Download track
+          </button>
+          <div class="h-px bg-white/10 my-1"></div>
+          <p class="text-[10px] uppercase text-slate-500 font-bold px-2 mb-1">Playback speed</p>
+          <div id="speed-options" class="grid grid-cols-3 gap-1">
+            <button class="speed-btn text-[10px] py-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 font-bold" data-speed="0.5">0.5x</button>
+            <button class="speed-btn text-[10px] py-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 font-bold" data-speed="0.75">0.75x</button>
+            <button class="speed-btn speed-active text-[10px] py-1 rounded bg-cyan-400 text-black font-bold" data-speed="1">1x</button>
+            <button class="speed-btn text-[10px] py-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 font-bold" data-speed="1.25">1.25x</button>
+            <button class="speed-btn text-[10px] py-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 font-bold" data-speed="1.5">1.5x</button>
+            <button class="speed-btn text-[10px] py-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 font-bold" data-speed="2">2x</button>
           </div>
         </div>
 
