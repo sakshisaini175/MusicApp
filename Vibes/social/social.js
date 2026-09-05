@@ -40,6 +40,29 @@
     await decodeMedia(await file.arrayBuffer(), file.name, Boolean(state.video));
   });
 
+  $('social-current-song').addEventListener('click', async () => {
+    const audioElement = document.getElementById('audio-element');
+    if (!audioElement?.src) {
+      setStatus('Play a song first, then use the current player song.');
+      return;
+    }
+    const title = document.getElementById('player-title')?.textContent || 'current-song';
+    const button = $('social-current-song');
+    button.disabled = true;
+    try {
+      setStatus('Loading the current player song...');
+      const response = await fetch(audioElement.src);
+      if (!response.ok) throw new Error(`Audio request failed: ${response.status}`);
+      await decodeMedia(await response.arrayBuffer(), title, false);
+      $('social-upload-label').textContent = `Current song: ${title}`;
+    } catch (error) {
+      setStatus('Unable to load the current song. Upload the file instead.');
+      console.error('[Social] Current song error:', error);
+    } finally {
+      button.disabled = false;
+    }
+  });
+
   $('social-process').addEventListener('click', async () => {
     if (!state.buffer) return;
     setStatus('Compressing audio dynamics...');
@@ -47,16 +70,40 @@
     try {
       const context = new OfflineAudioContext(state.buffer.numberOfChannels, state.buffer.length, state.buffer.sampleRate);
       const source = context.createBufferSource();
+      const rumbleFilter = context.createBiquadFilter();
+      const bassBoost = context.createBiquadFilter();
+      const bassPresence = context.createBiquadFilter();
       const compressor = context.createDynamicsCompressor();
       const gain = context.createGain();
+      const limiter = context.createDynamicsCompressor();
       source.buffer = state.buffer;
-      compressor.threshold.value = -28;
-      compressor.knee.value = 0;
-      compressor.ratio.value = 12;
-      compressor.attack.value = .003;
-      compressor.release.value = .15;
-      gain.gain.value = 2.2;
-      source.connect(compressor).connect(gain).connect(context.destination);
+      rumbleFilter.type = 'highpass';
+      rumbleFilter.frequency.value = 28;
+      bassBoost.type = 'lowshelf';
+      bassBoost.frequency.value = 110;
+      bassBoost.gain.value = 5;
+      bassPresence.type = 'peaking';
+      bassPresence.frequency.value = 75;
+      bassPresence.Q.value = .8;
+      bassPresence.gain.value = 2;
+      compressor.threshold.value = -24;
+      compressor.knee.value = 12;
+      compressor.ratio.value = 4;
+      compressor.attack.value = .005;
+      compressor.release.value = .12;
+      gain.gain.value = 1.35;
+      limiter.threshold.value = -1;
+      limiter.knee.value = 0;
+      limiter.ratio.value = 20;
+      limiter.attack.value = .001;
+      limiter.release.value = .08;
+      source.connect(rumbleFilter)
+        .connect(bassBoost)
+        .connect(bassPresence)
+        .connect(compressor)
+        .connect(gain)
+        .connect(limiter)
+        .connect(context.destination);
       source.start();
       const rendered = await context.startRendering();
       await renderResult(rendered);

@@ -1,9 +1,8 @@
 <section id="social-view" class="social-view hidden" aria-labelledby="social-title">
   <div class="social-heading">
     <div>
-      <p class="social-kicker">Creator tools</p>
-      <h2 id="social-title">Social Media Audio/Video Compressor</h2>
-      <p>Upload a track or video to smooth out its dynamics before sharing.</p>
+      <h2 id="social-title">Social Media Bass Boost &amp; Compressor</h2>
+      <p>Boost the low end and control dynamics before sharing.</p>
     </div>
     <span class="social-status-pill"><span></span> Local processing</span>
   </div>
@@ -16,6 +15,9 @@
         <span id="social-upload-label">Select MP3, MP4, WAV, 3GP, M4A, etc.</span>
         <input type="file" id="social-file-input" accept="audio/*,video/*,.mp3,.m4a,.wav,.ogg,.aac,.mp4,.3gp,.webm,.mkv">
       </button>
+      <button type="button" id="social-current-song" class="social-secondary-button">
+        <i data-lucide="music-2"></i> Use current player song
+      </button>
 
       <label class="social-label" for="social-export-format">Export format option</label>
       <select id="social-export-format" class="social-select">
@@ -26,7 +28,7 @@
       </select>
 
       <button type="button" id="social-process" class="social-primary-button" disabled>
-        <i data-lucide="wand-sparkles"></i> Process &amp; Compress Audio
+        <i data-lucide="wand-sparkles"></i> Bass Boost &amp; Compress
       </button>
       <p id="social-status" class="social-status" role="status" aria-live="polite"></p>
     </div>
