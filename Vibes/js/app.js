@@ -447,7 +447,7 @@ function showFavorites() {
 }
 
 function simulateLiveListeners() {
-  let currentListeners = 412;
+  let currentListeners = 1000;
   const userCountEl = document.getElementById('live-listeners-count');
   if (!userCountEl) return;
 
