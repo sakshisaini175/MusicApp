@@ -332,7 +332,8 @@ function checkAndPlayAd(nextSongToPlay) {
 async function playSong(song) {
   if (isAdPlaying) return;
 
-  const adTriggered = checkAndPlayAd(song);
+  //const adTriggered = checkAndPlayAd(song);  //Comment Out the Ad Playable after 5 songs.
+  const adTriggered = false;
   if (!adTriggered) {
     executePlaySong(song);
   }
