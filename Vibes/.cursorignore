@@ -1,0 +1,17 @@
+# Dependencies and generated output
+node_modules/
+dist/
+build/
+.cache/
+.tmp/
+
+# Logs
+*.log
+
+# Local secrets
+.env
+.env.local
+.env.*.local
+
+# Binary asset
+Image.png
