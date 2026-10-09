@@ -44,7 +44,7 @@ MusicApp/
     │   ├── index.html            # Social media compressor UI
     │   ├── social.css            # Social compressor styling
     │   └── social.js             # File decoding, bass boost, compression, preview, export logic
-    └── .env.example              # Optional example env file (if added locally)
+    └── .env                      # Local secrets; do not commit
 ```
 
 ---
@@ -76,6 +76,7 @@ MusicApp/
   - YouTube Data API v3 for metadata and search results
   - RapidAPI `youtube-mp36` for YouTube-to-MP3 conversion
 - Storage: browser `localStorage` for favorites
+- Search cache: Upstash Redis REST API when configured; process-local cache as a fallback
 - Hosting: Vercel-ready Node server
 
 ---
@@ -89,13 +90,48 @@ YOUTUBE_API_KEY=your_youtube_data_api_key
 RAPIDAPI_KEY=your_rapidapi_key
 NODE_ENV=development
 PORT=3000
+
+# Optional shared song-search cache (recommended for Vercel)
+UPSTASH_REDIS_REST_URL=https://your-database.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your_upstash_rest_token
+# Optional; defaults to 3600 seconds (1 hour)
+SONGS_CACHE_TTL_SECONDS=3600
 ```
 
 Notes:
 
 - `YOUTUBE_API_KEY` is required for song search metadata
 - `RAPIDAPI_KEY` is required for `/api/song/download`
+- `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` enable shared song-search caching across Vercel instances. Keep the token secret and never expose it in frontend code or commit it.
+- Upstash is optional. If it is not configured or temporarily unavailable, the app continues by calling YouTube directly; caching then only exists in the current server process.
+- Search results are fresh for one hour by default and retained for up to two additional hours as stale fallback. Redis expires entries after three hours total. `SONGS_CACHE_TTL_SECONDS` changes the fresh period; stale retention remains two hours.
+- Search requests for the same query and page are coalesced while in flight. With Upstash configured, a short-lived shared lock also helps avoid duplicate refreshes across serverless instances. Concurrent audio conversions for the same video are coalesced within an instance; conversion results are not persistently cached.
 - `NODE_ENV` should be set to `production` in deployed environments
+
+---
+
+## Song Search Cache
+
+The `/api/songs` route caches YouTube search results by normalized query and page token. When Redis is configured, the cache is shared by Vercel instances, reducing repeated YouTube API calls for popular searches.
+
+Cache behavior:
+
+- A result is fresh for one hour by default and is returned without another YouTube search request.
+- After the fresh period, the backend refreshes the result. If YouTube is unavailable or its quota is exhausted, a cached result can be served stale for up to two more hours.
+- Redis expires each entry automatically after three hours total. Cache hits do not extend the expiry.
+- Redis read, write, or lock failures do not prevent the app from falling back to its normal YouTube request path. If YouTube also fails and no stale result exists, the route returns an error and the frontend can show its bundled fallback tracks.
+- A cache miss or refresh still calls YouTube and uses its quota. Caching does not remove RapidAPI quota limits for new audio conversions.
+
+### Create and configure Upstash Redis
+
+1. Create a Redis database in the [Upstash Console](https://console.upstash.com/). Choose a region close to the Vercel Function Region (the Vercel project may show `iad1` by default). Read regions are not needed for this app.
+2. Select a plan appropriate for your usage. The Upstash Free plan has usage limits; see [current Redis pricing](https://upstash.com/pricing/redis).
+3. Copy the database REST URL and REST token from its details page. Keep the token private.
+4. For local development, add `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` to `Vibes/.env`.
+5. In Vercel project settings, add both variables under **Environment Variables** for Production (and Preview if needed). Add `YOUTUBE_API_KEY` and `RAPIDAPI_KEY` there too if they are not already configured.
+6. Redeploy after adding or changing environment variables.
+
+If the Upstash free allowance is exhausted or Redis is unavailable, the app continues without shared caching; uncached searches may then consume YouTube quota as usual.
 
 ---
 
@@ -271,4 +307,3 @@ This project currently combines a static frontend with a backend API and a brows
 ---
 
 Built with ❤️ for music lovers.
-

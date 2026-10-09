@@ -6,10 +6,31 @@ let isLoading = false;
 let hasMore = true;
 
 const BATCH_LIMIT = 50; // Optimized to 50 for Archive.org API stability
+const SONG_RESULT_CACHE_TTL_MS = 5 * 60 * 1000;
+const SONG_RESULT_CACHE_LIMIT = 40;
+const songResultCache = new Map();
 
 let currentPlaylist = [];
 let isShowingFavorites = false;
 let currentSongIndex = -1;
+
+function getCachedSongResult(key) {
+  const entry = songResultCache.get(key);
+  if (!entry) return null;
+  if (entry.expiresAt <= Date.now()) {
+    songResultCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function cacheSongResult(key, data) {
+  songResultCache.delete(key);
+  songResultCache.set(key, { data, expiresAt: Date.now() + SONG_RESULT_CACHE_TTL_MS });
+  if (songResultCache.size > SONG_RESULT_CACHE_LIMIT) {
+    songResultCache.delete(songResultCache.keys().next().value);
+  }
+}
 
 // Global reference for currently playing song object
 let currentlyPlayingSong = null; 
@@ -131,8 +152,15 @@ async function fetchNextBatch() {
   const apiUrl = `/api/songs?${params.toString()}`;
 
   try {
-    const response = await fetch(apiUrl);
-    const data = await response.json();
+    let data = getCachedSongResult(apiUrl);
+    let response;
+    if (!data) {
+      response = await fetch(apiUrl);
+      data = await response.json();
+      if (response.ok && data.success && Array.isArray(data.songs)) {
+        cacheSongResult(apiUrl, data);
+      }
+    }
 
     if (data.success && Array.isArray(data.songs) && data.songs.length > 0) {
       const existingIds = new Set(currentPlaylist.map(s => s.id));
@@ -149,6 +177,12 @@ async function fetchNextBatch() {
       hasMore = false;
       if (currentPlaylist.length === 0 && window.fallbackSongs) {
         appendSongsToList(window.fallbackSongs[currentCategoryId] || []);
+      }
+      if (response?.status === 429 && data.error) {
+        const notice = document.createElement('p');
+        notice.className = 'p-3 text-center text-xs text-amber-300';
+        notice.textContent = `${data.error} Showing sample tracks where available.`;
+        document.getElementById('song-list')?.prepend(notice);
       }
     }
   } catch (err) {
@@ -383,6 +417,7 @@ async function executePlaySong(song) {
   if (titleEl) titleEl.innerText = "Loading stream...";
   if (artistEl) artistEl.innerText = song.title;
 
+  let playbackQuotaExceeded = false;
   try {
     const downloadRes = await fetch(`/api/song/download?videoId=${song.id}`);
     const downloadData = await downloadRes.json();
@@ -391,12 +426,19 @@ async function executePlaySong(song) {
       setPlayerAndPlay(downloadData.streamUrl, song);
       return;
     }
+    playbackQuotaExceeded = downloadRes.status === 429;
   } catch (err) {
     console.warn("Backend MP3 stream extraction error:", err);
   }
 
   if (song.streamUrl) {
     setPlayerAndPlay(song.streamUrl, song);
+    return;
+  }
+
+  if (playbackQuotaExceeded) {
+    if (titleEl) titleEl.innerText = "Playback temporarily unavailable";
+    if (artistEl) artistEl.innerText = "The audio provider's request limit has been reached.";
     return;
   }
 
